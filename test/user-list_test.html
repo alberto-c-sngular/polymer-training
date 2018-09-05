@@ -6,8 +6,8 @@
 
     <title>user-list test</title>
 
-    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
 
     <link rel="import" href="../user-list.html">
   </head>
@@ -19,30 +19,99 @@
       </template>
     </test-fixture>
 
-    <test-fixture id="ChangedPropertyTestFixture">
-      <template>
-        <user-list prop1="new-prop1"></user-list>
-      </template>
-    </test-fixture>
-
     <script>
       suite('user-list', () => {
+        let element,
+            elementShadowRoot,
+            addButton,
+            inputName,
+            inputLastName,
+            inputAge;
 
-        test('instantiating the element with default properties works', () => {
-          const element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'user-list');
-          const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello user-list!');
+        const demoUser = {
+          nombre: 'Demo',
+          apellidos: 'User',
+          edad: 20
+        }
+        const userList = [
+          { id: 0, nombre: 'User1', apellidos: 'LastName1', edad: 20 },
+          { id: 1, nombre: 'User2', apellidos: 'LastName2', edad: 50 },
+          { id: 2, nombre: 'User3', apellidos: 'LastName3', edad: 40 },
+          { id: 3, nombre: 'User4', apellidos: 'LastName4', edad: 30 },
+          { id: 4, nombre: 'User5', apellidos: 'LastName5', edad: 90 },
+        ]
+        setup(function() {
+          element = fixture('BasicTestFixture');
+          elementShadowRoot = element.shadowRoot;
+          addButton = elementShadowRoot.querySelector('paper-button');
+          inputName = elementShadowRoot.querySelector('#nombre');
+          inputLastName = elementShadowRoot.querySelector('#apellidos');
+          inputAge = elementShadowRoot.querySelector('#edad');
         });
 
-        test('setting a property on the element works', () => {
-          // Create a test fixture
-          const element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+        test('add user without name shouldn\'t be posible', () => {
+          inputName.value = "";
+          inputLastName.value = demoUser.apellidos;
+          inputAge.value = demoUser.edad;
+          addButton.click();
+          expect(element.users).to.have.length(0);
+          expect(element.errorMessage).to.be.equal("El nombre es necesario");
+        });
+
+        test('add user without lastname shouldn\'t be posible', () => {
+          inputName.value = demoUser.nombre;
+          inputLastName.value = "";
+          inputAge.value = demoUser.edad;
+          addButton.click();
+          expect(element.users).to.have.length(0);
+          expect(element.errorMessage).to.be.equal("El apellido es necesario");
+        });
+
+        test('add user without age shouldn\'t be posible', () => {
+          inputName.value = demoUser.nombre;
+          inputLastName.value = demoUser.apellidos;
+          inputAge.value = "";
+          addButton.click();
+          expect(element.users).to.have.length(0);
+          expect(element.errorMessage).to.be.equal("La edad es necesaria");
+        });
+
+        test('average should be correct', () => {
+          element.users = [...userList];
+          expect(element.mediaEdad).to.be.equal(46);
+        });
+
+        test('when press button if form is valid the user should be added', () => {
+          inputName.value = demoUser.nombre;
+          inputLastName.value = demoUser.apellidos;
+          inputAge.value = demoUser.edad;
+          addButton.click();
+          expect(element.users).to.have.length(1);
+          expect(element.users[0].nombre).to.be.equal('Demo');
+          expect(element.users[0].apellidos).to.be.equal('User');
+          expect(element.users[0].edad).to.be.equal(20);
+        });
+
+        test('after add a user the form should be empty', () => {
+          inputName.value = demoUser.nombre;
+          inputLastName.value = demoUser.apellidos;
+          inputAge.value = demoUser.edad;
+          addButton.click();
+          expect(inputName.value).to.be.null;
+          expect(inputLastName.value).to.be.null;
+          expect(inputAge.value).to.be.null;
+        });
+
+        test('pressing remove button should remove the user from list', (done) => {
+          element.set('users', [...userList]);
+
+          flush(() => {
+            expect(element.users).to.have.length(5);
+            const userElements = elementShadowRoot.querySelector('user-card');
+            userElements.shadowRoot.querySelector('.close').click();
+            expect(element.users).to.have.length(4);
+            done();
+          })
         });
 
       });
