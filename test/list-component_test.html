@@ -13,36 +13,42 @@
   </head>
   <body>
 
-    <test-fixture id="BasicTestFixture">
+    <test-fixture id="initialUserFixture">
       <template>
         <list-component></list-component>
       </template>
     </test-fixture>
 
-    <test-fixture id="ChangedPropertyTestFixture">
+    <test-fixture id="newUserFixture">
       <template>
-        <list-component prop1="new-prop1"></list-component>
+        <list-component></list-component>
       </template>
     </test-fixture>
 
     <script>
+
+      // Two basic test
+
       suite('list-component', () => {
 
-        test('instantiating the element with default properties works', () => {
-          const element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'list-component');
+        test('There is an initial user John Doe.', () => {
+          const element = fixture('initialUserFixture');
           const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello list-component!');
+          const length = elementShadowRoot.querySelector('tbody').childElementCount;
+          // Header + John Doe + new user row (input)
+          assert.equal(length, 3);
         });
 
-        test('setting a property on the element works', () => {
-          // Create a test fixture
-          const element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
+        test('Adding a new user increases the users array.', () => {
+          const element = fixture('newUserFixture');
           const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+          element.newName = 'Bruce';
+          element.newSurname = 'Wayne';
+          element.newAge = '45';
+          const initialUsers = element.users.length;
+          element.addUser();
+          const finalUsers = element.users.length;
+          assert.equal(initialUsers + 1, finalUsers);
         });
 
       });
