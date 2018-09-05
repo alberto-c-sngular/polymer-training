@@ -1,33 +1,80 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
+
 <dom-module id="polymer-training">
   <template>
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-alignment iron-flex-factors">
       :host {
         display: block;
+        font-family: sans-serif;
+      }
+
+      .header {
+        font-weight: bold;
+      }
+
+      .new-user-button {
+        background-color: rgb(12, 137, 209);
+        color: #fff;
+        margin: 10px auto;
+      }
+
+      .new-user-form {
+        padding: 10px;
+        background: #eee;
+        border-radius: 5px;
+        margin-top: 15px;
+      }
+
+      .new-user-form [header] {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 1.2em;
+      }
+
+      .new-user-form paper-input {
+        margin: 10px;
       }
     </style>
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Primer Apellido</th>
-          <th>Edad</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template is="dom-repeat" items="{{items}}">
-          <tr>
-            <td>[[item.name]]</td>
-            <td>[[item.lastName]]</td>
-            <td>[[item.age]]</td>
-          </tr>
-        </template>
-        <tr>
-          <td colspan="3">Media de edad: [[averageAge]]</td>
-        </tr>
-      </tbody>
-    </table>
+
+    <paper-item>
+      <div class="header flex-5">Nombre</div>
+      <div class="header flex-5">Primer Apellido</div>
+      <div class="header flex-2">Edad</div>
+    </paper-item>
+
+    <template is="dom-repeat" items="{{items}}">
+      <paper-item style="background:[[__getColorForAge(item.age)]]">
+        <div class="flex-5">[[item.firstName]]</div>
+        <div class="flex-5">[[item.lastName]]</div>
+        <div class="flex-2">[[item.age]]</div>
+      </paper-item>
+    </template>
+
+    <paper-item class="layout horizontal center-justified">
+      <div>Media de edad: <b>[[averageAge]]</b></div>
+    </paper-item>
+
+
+    <div class="new-user-form">
+      <div header>Añadir nuevo</div>
+      <div class="layout horizontal">
+        <paper-input class="flex-5" value="{{newUser.firstName}}" label="Nombre"></paper-input>
+        <paper-input class="flex-5" value="{{newUser.lastName}}" label="Primer apellido"></paper-input>
+        <paper-input class="flex-2" value="{{newUser.age}}" type="number" label="Edad" min="1" max="120"></paper-input>
+      </div>
+      <div style="text-align: center">
+        <paper-button class="new-user-button" raised on-click="__addNewUser">Añadir</paper-button>
+      </div>
+    </div>
+
+    <paper-toast id="toast"></paper-toast>
   </template>
 
   <script>
@@ -49,25 +96,49 @@
           },
           averageAge: {
             type: Number,
-            computed: '__calculateAverageAge(items.*)'
+            computed: '__calculateAverageAge(items.splices)'
           }
         };
       }
-      connectedCallback(){
+
+      connectedCallback() {
         super.connectedCallback();
-        this.push('items', {
-          'name': 'Daniel',
-          'lastName': 'Lopez',
-          'age': 34
-        });
-        console.log(this.items);
+        this.newUser = this.__getEmptyUser();
       }
-      __calculateAverageAge(changes){
-        console.log(items);
-        if (! || !items.length){
-          return 0;
+
+      __getEmptyUser() {
+        return {
+          firstName: '',
+          lastName: '',
+          age: 1
         }
-        return items.reduce((acc,next) => acc + next.age,0)/items.length;
+      }
+      __calculateAverageAge() {
+        return this.items.length == 0 ? 0 :
+          Math.floor((this.items.reduce((acc, next) => acc + parseInt(next.age), 0) / this.items.length) * 100) / 100;
+      }
+      __addNewUser() {
+        if (isNaN(parseInt(this.newUser.age)) || parseInt(this.newUser.age) < 1) {
+          this.$.toast.text ="Introduce una edad válida";
+          this.$.toast.show();
+          return;
+        }
+        this.push('items', {
+          firstName: this.newUser.firstName,
+          lastName: this.newUser.lastName,
+          age: parseInt(this.newUser.age)
+        });
+        this.newUser = this.__getEmptyUser();
+      }
+      __getColorForAge(age) {
+        if (age < 20) {
+          return '#fff';
+        } else if (age < 30) {
+          return '#eff7f7';
+        } else if (age < 40) {
+          return '#cbf2f2';
+        }
+        return '#88efef';
       }
     }
 

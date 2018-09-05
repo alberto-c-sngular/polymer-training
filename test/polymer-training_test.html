@@ -13,38 +13,31 @@
   </head>
   <body>
 
-    <test-fixture id="BasicTestFixture">
+    <test-fixture id="NoItemsFixture">
       <template>
         <polymer-training></polymer-training>
       </template>
     </test-fixture>
 
-    <test-fixture id="ChangedPropertyTestFixture">
+    <test-fixture id="OneItemFixture">
       <template>
-        <polymer-training prop1="new-prop1"></polymer-training>
+        <polymer-training items='[{"firstName":"Dummy","lastName":"Foo","age":20}]'></polymer-training>
       </template>
     </test-fixture>
 
     <script>
       suite('polymer-training', () => {
 
-        test('instantiating the element with default properties works', () => {
-          const element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'polymer-training');
-          const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello polymer-training!');
+        test('instantiate without properties', () => {
+          const element = fixture('NoItemsFixture');
+          expect(element.averageAge).to.equal(0);
         });
 
-        test('setting a property on the element works', () => {
-          // Create a test fixture
-          const element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          const elementShadowRoot = element.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+        test('instantiate with one item', () => {
+          const element = fixture('OneItemFixture');
+          expect(element.averageAge).to.equal(20);
+          expect(element.items.length).to.equal(1);
         });
-
       });
     </script>
 
