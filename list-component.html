@@ -7,7 +7,26 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    
+    <table>
+      <tr>
+        <th>Nombre</th>
+        <th>Primer Apellido</th>
+        <th>Edad</th>
+      </tr>
+      <template is="dom-repeat" items="{{users}}">
+        <td>[[item.name]]</td>
+        <td>[[item.surname]]</td>
+        <td>[[item.age]]</td>
+      </template>
+      <tr>
+        <td><input type="text" name="name" id="input-name"></td>
+        <td><input type="text" name="surname" id="input-surname"></td>
+        <td><input type="number" name="age" id="input-age"></td>
+      </tr>
+    </table>
+    <button id="add-user">Add user</button>
+
   </template>
 
   <script>
@@ -23,9 +42,17 @@
       static get is() { return 'list-component'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'list-component'
+          users: {
+            type: Array,
+            value: function() {
+              return [
+                {
+                  name: 'John',
+                  surname: 'Doe',
+                  age: '30'
+                }
+              ];
+            }
           }
         };
       }
