@@ -15,18 +15,20 @@
         <th>Edad</th>
       </tr>
       <template is="dom-repeat" items="{{users}}">
-        <td>[[item.name]]</td>
-        <td>[[item.surname]]</td>
-        <td>[[item.age]]</td>
+        <tr>
+          <td>[[item.name]]</td>
+          <td>[[item.surname]]</td>
+          <td>[[item.age]]</td>
+        </tr>
       </template>
       <tr>
-        <td><input type="text" name="name" id="input-name"></td>
-        <td><input type="text" name="surname" id="input-surname"></td>
-        <td><input type="number" name="age" id="input-age"></td>
+        <td><input type="text" name="name" id="input-name" value="{{newName::change}}"></td>
+        <td><input type="text" name="surname" id="input-surname" value="{{newSurname::change}}"></td>
+        <td><input type="number" name="age" id="input-age" value="{{newAge::change}}"></td>
+        <td><button id="add-user" on-click="addUser">Add User</button></td>
       </tr>
     </table>
-    <button id="add-user">Add user</button>
-
+    <p>Average Age: [[average]]</p>
   </template>
 
   <script>
@@ -39,7 +41,9 @@
      * @demo demo/index.html
      */
     class ListComponent extends Polymer.Element {
+      
       static get is() { return 'list-component'; }
+      
       static get properties() {
         return {
           users: {
@@ -53,9 +57,39 @@
                 }
               ];
             }
+          },
+          average: {
+            type: Number,
+            value: 0
+          },
+          newName: {
+            type: String,
+            value: ''
+          },
+          newSurname: {
+            type: String,
+            value: ''
+          },
+          newAge: {
+            type: Number,
+            value: 0
           }
         };
       }
+
+      /**
+       * Add users from inputs
+       */
+      addUser() {
+        if(this.newName && this.newSurname && this.newAge) {
+          this.push('users', {
+            name: this.newName,
+            surname: this.newSurname,
+            age: this.newAge
+          });
+        }
+      }
+
     }
 
     window.customElements.define(ListComponent.is, ListComponent);
