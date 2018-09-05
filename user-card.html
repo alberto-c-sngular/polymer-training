@@ -10,9 +10,15 @@
         padding: 1em;
         background-color: var(--background-user);      
       }
+      .close {
+        float: right;
+        text-decoration: none;
+        font-weight: bold;
+      }
     </style>
-    <p>[[user.apellidos]], [[user.nombre]]</p>
-    <p>[[user.edad]] años</p>
+    <a class="close" href on-click="_remove">X</a>
+    <h2>[[user.apellidos]], [[user.nombre]]</h2>
+    <small>[[user.edad]] años</small>
   </template>
 
   <script>
@@ -54,6 +60,15 @@
             });
           }
         }
+      }
+
+      _remove(evt) {
+        evt.preventDefault();
+        this.dispatchEvent(new CustomEvent(
+          'remove-user', { 
+            detail: this.user
+          })
+        );
       }
 
     }

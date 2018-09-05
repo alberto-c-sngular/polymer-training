@@ -8,18 +8,21 @@
     <style>
       :host {
         display: block;
+        position: relative;
       }
     </style>
     <h3>Añadir usuario</h3>
     <paper-input id="nombre" label="Nombre"></paper-input>
-    <paper-input id="apellidos" label="Apellidos"></paper-input>
+    <paper-input id="apellidos" label="Primer Apellido"></paper-input>
     <paper-input id="edad" label="Edad"></paper-input>    
-    <paper-button on-click="_addUser">Añadir</paper-button>
+    <paper-button on-click="_addUser" raised>Añadir</paper-button>
     <hr>
     
     <template is="dom-repeat" items="[[users]]" as="user">
-      <user-card user="[[user]]"></user-card>
+      <user-card user="[[user]]" on-remove-user="_removeUser"></user-card>
     </template>
+    <hr>
+    <b>Media edad: </b> [[mediaEdad]]
   </template>
 
   <script>
@@ -38,17 +41,39 @@
           users: {
             type: Array,
             value: () => []
+          },
+          mediaEdad: {
+            type: Number,
+            computed: '_mediaEdad(users.splices)'
           }
         };
       }
+      constructor() {
+        super();
+        this.contador = 0;
+      }
+
+      _mediaEdad() {
+        return this.users
+          .reduce( (total, actual) => total + actual.edad, 0) / this.users.length || 0;
+      }
 
       _addUser(evt) {
-        const user = {
+        this.push('users', {
+          id: this.contador++,
           nombre: this.$.nombre.value,
           apellidos: this.$.apellidos.value,
-          edad: this.$.edad.value,
-        }
-        this.push('users', user);
+          edad: +this.$.edad.value
+        });
+      }
+
+      _removeUser(evt) {
+        const userToRemove = evt.detail;
+        this.set('users',
+          this.users.filter(
+            user => user.id !== userToRemove.id
+          )
+        );
       }
     }
 
