@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="user-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `user-list`
+     * Lista de usuarios
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class UserList extends Polymer.Element {
+      static get is() { return 'user-list'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'user-list'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(UserList.is, UserList);
+  </script>
+</dom-module>
