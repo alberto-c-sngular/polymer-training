@@ -71,16 +71,15 @@
       <div class="empty-list">La lista está vacía :(</div>
     </template>
     <template is="dom-repeat" items="{{items}}">
-      <paper-item style="background:[[__getColorForAge(item.age)]]">
+      <paper-item class="user-item" style="background:[[__getColorForAge(item.age)]]">
         <div class="flex-4">[[item.firstName]]</div>
         <div class="flex-4">[[item.lastName]]</div>
         <div class="flex-2">[[item.age]]</div>
         <div class="flex-2">
-          <paper-icon-button icon="delete" on-click="__removeItem"></paper-icon-button>
+          <paper-icon-button delete-button icon="delete" on-click="__removeItem"></paper-icon-button>
         </div>
       </paper-item>
     </template>
-
     <template is="dom-if" if="[[averageAge]]">
       <paper-item class="layout horizontal center-justified">
         <div>La media de edad es <b>[[averageAge]]</b></div>

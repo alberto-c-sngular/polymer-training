@@ -28,15 +28,71 @@
     <script>
       suite('polymer-training', () => {
 
-        test('instantiate without properties', () => {
-          const element = fixture('NoItemsFixture');
-          expect(element.averageAge).to.equal(0);
+        newUser = age => ({
+          firstName: 'foo',
+          lastName: 'bar',
+          age
         });
 
-        test('instantiate with one item', () => {
+        addNewUser = (element,age) => {
+          element.newUser = newUser(age);
+          element.shadowRoot.querySelector(".new-user-button").dispatchEvent(new MouseEvent('click'));
+        }
+
+        test('instantiate without properties', done => {
+          const element = fixture('NoItemsFixture');
+          expect(element.averageAge).to.equal(0);
+          flush(()=>{
+            expect(element.shadowRoot.querySelector('.empty-list')).to.not.be.null;
+            done();
+          })
+        });
+
+        test('instantiate with one item', done => {
           const element = fixture('OneItemFixture');
           expect(element.averageAge).to.equal(20);
           expect(element.items.length).to.equal(1);
+          flush(()=>{
+            expect(element.shadowRoot.querySelector('.empty-list')).to.be.null;
+            done();
+          })
+        });
+
+        test('add item', () => {
+          const element = fixture('NoItemsFixture');
+          expect(element.items.length).to.equal(0);
+          addNewUser(element,25);
+          expect(element.items.length).to.equal(1);
+          expect(element.averageAge).to.equal(25);
+        });
+
+        test('remove items', done => {
+          const element = fixture('OneItemFixture');
+          expect(element.items.length).to.equal(1);
+          flush(()=>{
+            //click on first user delete button
+            element.shadowRoot.querySelector(".user-item [delete-button]").dispatchEvent(new MouseEvent('click'));
+            expect(element.items.length).to.equal(0);
+            done();
+          });
+        });
+
+        test('age validator', () => {
+          const element = fixture('NoItemsFixture');
+          expect(element.items.length).to.equal(0);
+          addNewUser(element,0);
+          //item should not be added because 0 is not a valid age:
+          expect(element.items.length).to.equal(0);
+        });
+
+        test('average age is right', () => {
+          const element = fixture('NoItemsFixture');
+          addNewUser(element,17);
+          addNewUser(element,23);
+          addNewUser(element,36);
+          addNewUser(element,45);
+          expect(element.items.length).to.equal(4);
+          expect(element.averageAge).to.equal(30.25);
         });
       });
     </script>
