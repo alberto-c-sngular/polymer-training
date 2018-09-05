@@ -1,11 +1,11 @@
 <link rel="import" href="../polymer/polymer-element.html">
-
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
 
 <dom-module id="polymer-training">
   <template>
@@ -23,6 +23,7 @@
         background-color: rgb(12, 137, 209);
         color: #fff;
         margin: 10px auto;
+        width: 130px;
       }
 
       .new-user-form {
@@ -41,25 +42,51 @@
       .new-user-form paper-input {
         margin: 10px;
       }
+
+      paper-toast {
+        background-color: rgb(191, 0, 0);
+      }
+
+      paper-icon-button {
+        zoom: 0.8;
+        color: #00617f;
+      }
+
+      .empty-list {
+        text-align: center;
+        font-size: 1.2em;
+        color: #999;
+        margin: 45px 0;
+      }
     </style>
 
     <paper-item>
-      <div class="header flex-5">Nombre</div>
-      <div class="header flex-5">Primer Apellido</div>
+      <div class="header flex-4">Nombre</div>
+      <div class="header flex-4">Primer Apellido</div>
       <div class="header flex-2">Edad</div>
+      <div class="flex-2"></div>
     </paper-item>
 
+    <template is="dom-if" if="[[!items.length]]">
+      <div class="empty-list">La lista está vacía :(</div>
+    </template>
     <template is="dom-repeat" items="{{items}}">
       <paper-item style="background:[[__getColorForAge(item.age)]]">
-        <div class="flex-5">[[item.firstName]]</div>
-        <div class="flex-5">[[item.lastName]]</div>
+        <div class="flex-4">[[item.firstName]]</div>
+        <div class="flex-4">[[item.lastName]]</div>
         <div class="flex-2">[[item.age]]</div>
+        <div class="flex-2">
+          <paper-icon-button icon="delete" on-click="__removeItem"></paper-icon-button>
+        </div>
       </paper-item>
     </template>
 
-    <paper-item class="layout horizontal center-justified">
-      <div>Media de edad: <b>[[averageAge]]</b></div>
-    </paper-item>
+    <template is="dom-if" if="[[averageAge]]">
+      <paper-item class="layout horizontal center-justified">
+        <div>La media de edad es <b>[[averageAge]]</b></div>
+      </paper-item>
+    </template>
+
 
 
     <div class="new-user-form">
@@ -106,6 +133,9 @@
         this.newUser = this.__getEmptyUser();
       }
 
+      __removeItem(e) {
+        this.splice('items', this.items.indexOf(e.model.item), 1);
+      }
       __getEmptyUser() {
         return {
           firstName: '',
@@ -119,7 +149,7 @@
       }
       __addNewUser() {
         if (isNaN(parseInt(this.newUser.age)) || parseInt(this.newUser.age) < 1) {
-          this.$.toast.text ="Introduce una edad válida";
+          this.$.toast.text = "Introduce una edad válida";
           this.$.toast.show();
           return;
         }
