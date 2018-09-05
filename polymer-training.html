@@ -1,0 +1,76 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="polymer-training">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Primer Apellido</th>
+          <th>Edad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="{{items}}">
+          <tr>
+            <td>[[item.name]]</td>
+            <td>[[item.lastName]]</td>
+            <td>[[item.age]]</td>
+          </tr>
+        </template>
+        <tr>
+          <td colspan="3">Media de edad: [[averageAge]]</td>
+        </tr>
+      </tbody>
+    </table>
+  </template>
+
+  <script>
+    /**
+     * `polymer-training`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PolymerTraining extends Polymer.Element {
+      static get is() { return 'polymer-training'; }
+      static get properties() {
+        return {
+          items: {
+            type: Array,
+            value: () => []
+          },
+          averageAge: {
+            type: Number,
+            computed: '__calculateAverageAge(items.*)'
+          }
+        };
+      }
+      connectedCallback(){
+        super.connectedCallback();
+        this.push('items', {
+          'name': 'Daniel',
+          'lastName': 'Lopez',
+          'age': 34
+        });
+        console.log(this.items);
+      }
+      __calculateAverageAge(changes){
+        console.log(items);
+        if (! || !items.length){
+          return 0;
+        }
+        return items.reduce((acc,next) => acc + next.age,0)/items.length;
+      }
+    }
+
+    window.customElements.define(PolymerTraining.is, PolymerTraining);
+  </script>
+</dom-module>
