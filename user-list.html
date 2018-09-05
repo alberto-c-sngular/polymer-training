@@ -19,11 +19,10 @@
     <h3>Añadir usuario</h3>
     <paper-input id="nombre" label="Nombre" required></paper-input>
     <paper-input id="apellidos" label="Primer Apellido" required></paper-input>
-    <paper-input id="edad" type="number" label="Edad" required></paper-input>
-    <p id="errorMessage" hidden>Error: [[errorMessage]]</p>   
+    <paper-input id="edad" type="number" label="Edad" min="0" required></paper-input>
+    <p id="errorMessage" hidden><b>Error | </b> [[errorMessage]]</p>   
     <paper-button on-click="_addUser" raised>Añadir</paper-button>
-    <hr>
-    
+    <hr>    
     <template is="dom-repeat" items="[[users]]" as="user">
       <user-card user="[[user]]" on-remove-user="_removeUser"></user-card>
     </template>
@@ -65,17 +64,17 @@
       }
 
       _validateInputs() {
-        if( this.$.nombre.value === "") {
+        if( !this.$.nombre.value ) {
           this.errorMessage = "El nombre es necesario";
           this.$.errorMessage.removeAttribute('hidden');
           return false;
         }
-        if( this.$.apellidos.value === "") {
+        if( !this.$.apellidos.value) {
           this.errorMessage = "El apellido es necesario";
           this.$.errorMessage.removeAttribute('hidden');
           return false;
         }
-        if( this.$.edad.value === "") {
+        if( !this.$.edad.value || +this.$.edad.value < 0) {
           this.errorMessage = "La edad es necesaria";
           this.$.errorMessage.removeAttribute('hidden');
           return false;

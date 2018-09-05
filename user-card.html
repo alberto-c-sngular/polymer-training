@@ -8,15 +8,18 @@
         display: block;
         border: 1px solid #AAA;
         padding: 1em;
-        background-color: var(--background-user);      
+        border-radius: 5px;
+        margin-bottom: .5em;
+        background-color: var(--background-user);
       }
       .close {
         float: right;
         text-decoration: none;
         font-weight: bold;
+        color: black;
       }
     </style>
-    <a class="close" href on-click="_remove">X</a>
+    <a class="close" href on-click="_remove">✕</a>
     <h2>[[user.apellidos]], [[user.nombre]]</h2>
     <small>[[user.edad]] años</small>
   </template>
