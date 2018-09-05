@@ -1,0 +1,221 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<dom-module id="polymer-training">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      div.row {
+        @apply (--layout-horizontal)
+      }
+
+      .row>.col {
+        padding: 0.2rem 0.5rem;
+        @apply (--layout-flex);
+      }
+
+      .title {
+        font-size: 11pt;
+        font-weight: bold;
+
+      }
+
+      row.title {
+        border-bottom: 1px solid #0a0a0a;
+      }
+
+      .bottom-line {
+        border-bottom: 1px solid #cdcdcd;
+      }
+
+      .age-19 {
+        background-color: #eff7f7;
+      }
+
+      .age-29 {
+        background-color: #cbf2f2;
+      }
+
+      .age-39 {
+        background-color: #88efef;
+      }
+
+      .vertical {
+        @apply (--layout-center);
+      }
+    </style>
+
+    <!-- Html -->
+    <div class="content">
+      <!-- Form -->
+      <h4> Nuevo</h4>
+      <div style="margin-bottom: 2rem">
+
+        <iron-form>
+          <form>
+
+
+            <paper-input label="[[labelName]]" id="newName" required>
+            </paper-input>
+
+
+            <paper-input label="[[labelSurname]]" id="newSurname" required>
+            </paper-input>
+
+
+            <paper-input type="number" label="[[labelAge]]" id="newAge" required>
+            </paper-input>
+
+
+            <paper-button on-click="_generatePerson" style="width:100%" raised>
+              Añadir
+            </paper-button>
+
+          </form>
+        </iron-form>
+
+      </div>
+
+      <template is="dom-if" if="{{people.length}}">
+        <div class="row title">
+          <div class="col">[[labelName]]</div>
+          <div class="col">[[labelSurname]]</div>
+          <div class="col">[[labelAge]]</div>
+        </div>
+        <template is="dom-repeat" items="[[people]]" as="person">
+          <div class$="[[person.colorClass]] row bottom-line">
+            <div class="col">
+              {{person.name}}
+            </div>
+            <div class="col">
+              {{person.surname}}
+            </div>
+            <div class="col">
+              {{person.age}}
+            </div>
+          </div>
+        </template>
+        <div class="row title" style="padding-top: 1rem">
+          <div class="col"></div>
+          <div class="col">Media de edad</div>
+          <div class="col">[[ageAverage]]</div>
+        </div>
+      </template>
+
+
+
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * `polymer-training`
+     * Training
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PolymerTraining extends Polymer.Element {
+      static get is() { return 'polymer-training'; }
+      static get properties() {
+        return {
+          people: {
+            type: Array,
+            value: () => { return [] }
+          },
+          ageAverage: {
+            type: Number,
+            value: 0
+          },
+          labelName: {
+            type: String,
+            value: 'Nombre'
+          },
+          labelSurname: {
+            type: String,
+            value: 'Primer apellido'
+          },
+          labelAge: {
+            type: String,
+            value: 'Edad'
+          }
+        };
+      }
+      static get observers() {
+        return [
+          '_calculateAvg(people.splices)'
+        ]
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+      }
+
+      /**
+       *
+       */
+      _calculateAvg(a, b, c, d) {
+        const totalAge = this.people.reduce((total, current) => {
+          return total += Number(current.age);
+        }, 0)
+        const average = totalAge / this.people.length;
+        this.set('ageAverage', average.toFixed(1));
+      }
+
+      /**
+       *
+       */
+      _generatePerson(event) {
+        // get inputs
+        const name = this.$.newName;
+        const surname = this.$.newSurname;
+        const age = this.$.newAge;
+
+        this._addNewPerson(name.value, surname.value, age.value);
+        // clear inputs
+        name.value = null;
+        surname.value = null;
+        age.value = null;
+      }
+      /**
+       *
+       */
+      _addNewPerson(name, surname, age) {
+        if (name && surname && age && age >= 0) {
+          const newPerson = new Person(name, surname, age);
+          this.push('people', newPerson);
+        }
+      }
+    }
+    class Person {
+      constructor(name, last, age) {
+        this.name = name;
+        this.surname = last;
+        this.age = age;
+        this.colorClass;
+        this.getColor();
+      }
+
+      getColor() {
+        const age = this.age;
+        let color;
+        if (age >= 39) {
+          color = 'age-39'
+        } else if (age >= 29) {
+          color = 'age-29'
+        } else if (age >= 19) {
+          color = 'age-19'
+        }
+        this.colorClass = color;
+      }
+    }
+    window.customElements.define(PolymerTraining.is, PolymerTraining);
+  </script>
+</dom-module>
