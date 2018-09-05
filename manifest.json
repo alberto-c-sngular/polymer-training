@@ -1,0 +1,7 @@
+{
+  "name": "people-list",
+  "short_name": "people-list",
+  "description": "Polymer 2 exercise",
+  "start_url": "/",
+  "display": "standalone"
+}

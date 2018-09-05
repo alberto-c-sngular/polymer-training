@@ -1,0 +1,160 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="people-list-form.html">
+
+<dom-module id="people-list-app">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        font-family: 'Roboto', sans-serif;
+        padding: 1rem;
+      }
+
+      li {
+        padding: .5rem 1rem;
+        margin-bottom: 1px;
+      }
+      people-list-form {
+        margin-top: 2rem;
+      }
+
+      .loading {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        z-index: 9999
+      }
+
+      .loading span {
+        padding-left: 1rem;
+      }
+
+      .note {
+        color: #666;
+        font-size: .9rem;
+        font-style: italic;
+        padding: 0 1rem;
+      }
+    </style>
+
+    <iron-request id="xhr"></iron-request>
+
+    <template is="dom-if" if="[[loading]]">
+      <div class="loading">
+        <paper-spinner alt="Loading users..." active="true"></paper-spinner>
+        <span>Loading...</span>
+      </div>
+    </template>
+
+    <h1>People list</h2>
+
+    <ul>
+      <template is="dom-repeat" items="{{people}}">
+        <li style="background-color: [[item.bgColor]]">
+          [[item.firstName]] [[item.lastName]] ([[item.age]])
+        </li>
+      </template>
+    </ul>
+
+    <p class="note">People average age: <strong>[[ageAverage]]</strong></p>
+
+    <people-list-form id="form"></people-list-form>
+
+  </template>
+
+  <script>
+    class PeopleListApp extends Polymer.Element {
+      static get is() { return 'people-list-app'; }
+
+      static get properties () {
+        return {
+          ageAverage: {
+            type: Number
+          },
+          loading: {
+            type: Boolean,
+            value: true
+          },
+          people: {
+            type: Array,
+            observer: '_calculateAverage'
+          },
+        };
+      }
+
+      ready () {
+        super.ready();
+        this._getData();
+        this.$.form.addEventListener('add-person', () => {
+          this._onAddPerson();
+        });
+      }
+
+      _calculateAverage () {
+        const accumulate = this.people.reduce((acc, person) => acc + parseInt(person.age, 10), 0);
+
+        this.ageAverage = (accumulate / this.people.length).toFixed(1)
+      }
+
+      _fillInitialList (data) {
+        this.people = data.map(item => {
+          const bgColor = this._getBgColor(item.dob.age);
+
+          return {
+            firstName: item.name.first,
+            lastName: item.name.last,
+            age: item.dob.age,
+            bgColor: bgColor
+          }
+        });
+      }
+
+      _getBgColor (age, range, palette) {
+        const _palette = palette || ['#ffffff', '#eff7f7', '#cbf2f2', '#88efef'];
+        let _range = range || 39;
+        let color;
+
+        if (age > _range) {
+          return  _palette.pop();
+        }
+
+        _palette.length = _palette.length - 1;
+        _range = _range - 10;
+
+        return this._getBgColor(age, _range, _palette);
+      }
+
+      _getData () {
+        const request = this.$.xhr.send({ url: 'https://randomuser.me/api/?results=10' });
+        this.$.xhr.completes.then(
+          request => {
+            const response = JSON.parse(request.response);
+
+            this._fillInitialList(response.results);
+            this.loading = false;
+          },
+          rejected => {
+            console.error(rejected.error);
+          }
+        );
+      }
+
+      _onAddPerson () {
+        this.push('people', this.$.form.payload);
+      }
+    }
+
+    window.customElements.define(PeopleListApp.is, PeopleListApp);
+  </script>
+</dom-module>

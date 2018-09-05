@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>People list</title>
+    <meta name="description" content="Polymer 2 exercise">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <style>
+      main {
+        margin: 0 auto;
+      }
+
+      @media (min-width: 600px) {
+        main {
+          width: 80%;
+        }
+      }
+
+      @media (min-width: 768px) {
+        main {
+          width: 70%;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        main {
+          width: 60%;
+        }
+      }
+    </style>
+
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="/src/people-list-app.html">
+  </head>
+  <body>
+    <main>
+      <people-list-app></people-list-app>
+    </main>
+  </body>
+</html>
