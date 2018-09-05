@@ -1,4 +1,7 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="user-card.html">
 
 <dom-module id="user-list">
   <template>
@@ -7,7 +10,16 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    <h3>Añadir usuario</h3>
+    <paper-input id="nombre" label="Nombre"></paper-input>
+    <paper-input id="apellidos" label="Apellidos"></paper-input>
+    <paper-input id="edad" label="Edad"></paper-input>    
+    <paper-button on-click="_addUser">Añadir</paper-button>
+    <hr>
+    
+    <template is="dom-repeat" items="[[users]]" as="user">
+      <user-card user="[[user]]"></user-card>
+    </template>
   </template>
 
   <script>
@@ -23,11 +35,20 @@
       static get is() { return 'user-list'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'user-list'
+          users: {
+            type: Array,
+            value: () => []
           }
         };
+      }
+
+      _addUser(evt) {
+        const user = {
+          nombre: this.$.nombre.value,
+          apellidos: this.$.apellidos.value,
+          edad: this.$.edad.value,
+        }
+        this.push('users', user);
       }
     }
 

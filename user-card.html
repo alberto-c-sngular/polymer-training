@@ -1,0 +1,63 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+
+<dom-module id="user-card">
+  <template>
+    <style>
+      :host {
+        --background-user: white;
+        display: block;
+        border: 1px solid #AAA;
+        padding: 1em;
+        background-color: var(--background-user);      
+      }
+    </style>
+    <p>[[user.apellidos]], [[user.nombre]]</p>
+    <p>[[user.edad]] años</p>
+  </template>
+
+  <script>
+    /**
+     * `user-card` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class UserCard extends Polymer.Element {
+      static get is() { return 'user-card'; }
+      static get properties() {
+        return {
+          user: {
+            type: Object          }
+        };
+      }
+
+      ready() {
+        super.ready();
+        this._changeBackgroundColor();
+      }
+
+      _changeBackgroundColor() {
+        if (this.user.edad) {
+          if (+this.user.edad > 39) {
+            this.updateStyles({
+              '--background-user': '#88efef',
+            });
+          } else if(+this.user.edad > 29) {
+            this.updateStyles({
+              '--background-user': '#cbf2f2',
+            });
+          } else if(+this.user.edad > 19) {
+            this.updateStyles({
+              '--background-user': '#eff7f7',
+            });
+          }
+        }
+      }
+
+    }
+
+    window.customElements.define(UserCard.is, UserCard);
+  </script>
+</dom-module>
