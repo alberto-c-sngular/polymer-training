@@ -53,14 +53,14 @@
                 {
                   name: 'John',
                   surname: 'Doe',
-                  age: '30'
+                  age: 30
                 }
               ];
             }
           },
           average: {
             type: Number,
-            value: 0
+            computed: 'computeAverage(users.splices)'
           },
           newName: {
             type: String,
@@ -78,14 +78,25 @@
       }
 
       /**
+       * Compute average age value
+       */
+      computeAverage() {
+        let result = 0;
+        this.users.forEach(u => {
+          result += parseInt(u.age);  
+        });
+        return (result / this.users.length).toFixed(0);
+      }
+
+      /**
        * Add users from inputs
        */
       addUser() {
-        if(this.newName && this.newSurname && this.newAge) {
+        if(this.newName && this.newSurname && parseInt(this.newAge)) {
           this.push('users', {
             name: this.newName,
             surname: this.newSurname,
-            age: this.newAge
+            age: parseInt(this.newAge)
           });
         }
       }
