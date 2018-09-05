@@ -1,0 +1,48 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="new-person-form">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;              
+      }
+
+      .wrapper-btns {
+        margin-top: 15px;
+      }
+    </style>
+
+    <div class="card">
+      <h1>New person</h1>
+      <paper-input id="name" label="Name"></paper-input>
+      <paper-input id="lastname" label="Last name"></paper-input>
+      <paper-input id="age" label="Age" type="number"></paper-input>
+      <div class="wrapper-btns">
+        <paper-button on-tap="addPerson">Add person</paper-button>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+    class NewPersonForm extends Polymer.Element {
+      static get is() { return 'new-person-form'; }
+
+      addPerson(e) {
+        let person = {
+          name: this.$.name.value,
+          lastname: this.$.lastname.value,
+          age: this.$.age.value
+        }
+
+        let addPersonButtonPressed = new CustomEvent('add-person-btn-pressed', { detail: { person: person }, bubbles: true, composed: true });
+        this.dispatchEvent(addPersonButtonPressed);
+      }
+    }
+
+    window.customElements.define(NewPersonForm.is, NewPersonForm);
+  </script>
+</dom-module>

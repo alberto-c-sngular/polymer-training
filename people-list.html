@@ -1,0 +1,56 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./src/person-card.html">
+<link rel="import" href="./src/new-person-form.html">
+
+<dom-module id="people-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+    
+    <div id="cards-container">
+      <new-person-form></new-person-form>
+      <template is="dom-repeat" items="[[people]]" as="person">
+        <person-card person="[[person]]"></person-card>
+      </template>
+    </div>
+
+  </template>
+
+  <script>
+    class PeopleList extends Polymer.Element {
+      static get is() { return 'people-list'; }
+      static get properties() {
+        return {
+          people: {
+            type: Array,
+            value: [{
+              name: "Adrian",
+              lastname: "Moreno",
+              age: 27
+            }, {
+              name: "David",
+              lastname: "Lorenzo",
+              age: 27
+            }]
+          } 
+        };
+      }
+
+      ready() {
+        super.ready();
+        Polymer.RenderStatus.afterNextRender(this, function() {
+          this.addEventListener('add-person-btn-pressed', this._addPerson);
+        });
+      }
+
+      _addPerson(e) {
+        this.push('people', e.detail.person);
+      }
+    }
+
+    window.customElements.define(PeopleList.is, PeopleList);
+  </script>
+</dom-module>

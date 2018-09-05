@@ -1,0 +1,19 @@
+{
+  "name": "people-list",
+  "description": "A list of people",
+  "main": "people-list.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "iron-input": "PolymerElements/iron-input#^2.1.3",
+    "paper-input": "PolymerElements/paper-input#^2.2.3",
+    "paper-button": "PolymerElements/paper-button#^2.1.3"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0"
+  }
+}

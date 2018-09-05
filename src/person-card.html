@@ -1,0 +1,49 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./shared-styles.html">
+
+<dom-module id="person-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        --bkg-color: #ffffff;
+      }
+
+      .card {
+        background-color: var(--bkg-color);
+      }
+    </style>
+    <div class="card">
+      <h1>{{person.name}}</h1>
+      <p>{{person.lastname}}</p>
+      <p class="circle">{{person.age}}</p>
+    </div>
+
+  </template>
+
+  <script>
+    class PersonCard extends Polymer.Element {
+      static get is() { return 'person-card'; }
+      static get properties() {
+        return {
+          color: {
+            type: String,
+            computed: 'computeColor(person)',
+            observer(newValue, oldValue){
+              this.updateStyles({ '--bkg-color': newValue });
+            }
+          }
+        }
+      }
+
+      computeColor(person) {
+        if (person.age < 20) return "#ffffff";
+        else if (person.age > 20 && person.age <= 29) return "#eff7f7";
+        else if (person.age > 29 && person.age <= 39) return "#88efef";
+        else if (person.age > 39) return "#48ff00";
+      }
+    }
+
+    window.customElements.define(PersonCard.is, PersonCard);
+  </script>
+</dom-module>
