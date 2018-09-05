@@ -2,15 +2,26 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0;url=demo/" />
     <title>list-component</title>
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="bower_components/iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="list-component.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
   </head>
   <body>
-    <!--
-        ELEMENT API DOCUMENTATION SUPPORT COMING SOON
-        Visit demo/index.html to see live examples of your element running.
-        This page will automatically redirect you there when run in the browser
-        with `polymer serve`.
-      -->
+    <div class="vertical-section-container centered">
+      <h3>Basic list-component demo</h3>
+      <demo-snippet>
+        <template>
+          <list-component></list-component>
+        </template>
+      </demo-snippet>
+    </div>
   </body>
 </html>

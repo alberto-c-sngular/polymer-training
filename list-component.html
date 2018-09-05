@@ -28,6 +28,7 @@
         <th>Primer Apellido</th>
         <th>Edad</th>
       </tr>
+      <!-- Repeat for each user -->
       <template is="dom-repeat" items="{{users}}">
         <tr class$="[[computeColor(item)]]">
           <td>[[item.name]]</td>
@@ -35,6 +36,7 @@
           <td>[[item.age]]</td>
         </tr>
       </template>
+      <!-- Add new user -->
       <tr>
         <td><input type="text" name="name" id="input-name" value="{{newName::change}}"></td>
         <td><input type="text" name="surname" id="input-surname" value="{{newSurname::change}}"></td>
@@ -42,6 +44,7 @@
         <td><button id="add-user" on-click="addUser">Add User</button></td>
       </tr>
     </table>
+    <!-- Users average age -->
     <p>Average Age: [[average]]</p>
   </template>
 
@@ -52,7 +55,7 @@
      *
      * @customElement
      * @polymer
-     * @demo demo/index.html
+     * @demo index.html
      */
     class ListComponent extends Polymer.Element {
       
@@ -60,6 +63,11 @@
       
       static get properties() {
         return {
+          /**
+           * Users information
+           * 
+           * @type: [{name: string, surname: string, age: number}]
+           */
           users: {
             type: Array,
             value: function() {
@@ -72,18 +80,22 @@
               ];
             }
           },
+          /** Average age of all users */
           average: {
             type: Number,
             computed: 'computeAverage(users.splices)'
           },
+          /** Name of the new user */
           newName: {
             type: String,
             value: ''
           },
+          /** Surname of the new user */
           newSurname: {
             type: String,
             value: ''
           },
+          /** Age of the new user */
           newAge: {
             type: Number,
             value: 0
@@ -93,6 +105,8 @@
 
       /**
        * Compute average age value
+       *
+       * @return {number} The average age of all users.
        */
       computeAverage() {
         let result = 0;
@@ -102,6 +116,10 @@
         return (result / this.users.length).toFixed(0);
       }
 
+      /**
+       * User background color depending on age
+       * @return {string} The class name for the table row
+       */
       computeColor(item) {
         if(item.age < 20) {
           return 'child';
