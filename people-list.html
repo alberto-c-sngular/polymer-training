@@ -15,6 +15,9 @@
       <template is="dom-repeat" items="[[people]]" as="person">
         <person-card person="[[person]]"></person-card>
       </template>
+      <div class="card">
+        <p>Age average: [[average]]</p>
+      </div>
     </div>
 
   </template>
@@ -29,12 +32,16 @@
             value: [{
               name: "Adrian",
               lastname: "Moreno",
-              age: 27
+              age: 28
             }, {
               name: "David",
               lastname: "Lorenzo",
               age: 27
             }]
+          },
+          average: {
+            type: Number,
+            computed: 'computeAvg(people.splices)'
           } 
         };
       }
@@ -45,9 +52,15 @@
           this.addEventListener('add-person-btn-pressed', this._addPerson);
         });
       }
-
+      
       _addPerson(e) {
         this.push('people', e.detail.person);
+      }
+
+      computeAvg() {        
+        return this.people.reduce((acc, curr, i, arr) => 
+          i < arr.length - 1 ? acc + +curr.age : (acc + +curr.age) / arr.length                    
+        , 0);        
       }
     }
 
