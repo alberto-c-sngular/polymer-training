@@ -12,11 +12,14 @@
       .card {
         background-color: var(--bkg-color);
       }
+
+      h1, p {
+        display: inline-block;
+      }
     </style>
     <div class="card">
-      <h1>{{person.name}}</h1>
-      <p>{{person.lastname}}</p>
       <p class="circle">{{person.age}}</p>
+      <h1>{{person.name}} {{person.lastname}}</h1>      
     </div>
 
   </template>
