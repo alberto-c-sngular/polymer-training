@@ -1,7 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer-element.html">
-<link rel="import" href="bower_components/paper-input/paper-input.html">
-<link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="user-card.html">
+<link rel="import" href="new-user-form.html">
 
 <dom-module id="user-list">
   <template>
@@ -10,18 +9,9 @@
         display: block;
         position: relative;
       }
-      #errorMessage {
-        padding: 1em;
-        background: crimson;
-        color: white;
-      }
     </style>
     <h3>Añadir usuario</h3>
-    <paper-input id="nombre" label="Nombre" required></paper-input>
-    <paper-input id="apellidos" label="Primer Apellido" required></paper-input>
-    <paper-input id="edad" type="number" label="Edad" min="0" required></paper-input>
-    <p id="errorMessage" hidden><b>Error | </b> [[errorMessage]]</p>   
-    <paper-button on-click="_addUser" raised>Añadir</paper-button>
+    <new-user-form on-add-user="_addUser"></new-user-form>
     <hr>    
     <template is="dom-repeat" items="[[users]]" as="user">
       <user-card user="[[user]]" on-remove-user="_removeUser"></user-card>
@@ -63,44 +53,11 @@
           .reduce( (total, actual) => total + actual.edad, 0) / this.users.length || 0;
       }
 
-      _validateInputs() {
-        if( !this.$.nombre.value ) {
-          this.errorMessage = "El nombre es necesario";
-          this.$.errorMessage.removeAttribute('hidden');
-          return false;
-        }
-        if( !this.$.apellidos.value) {
-          this.errorMessage = "El apellido es necesario";
-          this.$.errorMessage.removeAttribute('hidden');
-          return false;
-        }
-        if( !this.$.edad.value || +this.$.edad.value < 0) {
-          this.errorMessage = "La edad es necesaria";
-          this.$.errorMessage.removeAttribute('hidden');
-          return false;
-        }
-        this.$.errorMessage.setAttribute('hidden', '');
-        this.errorMessage = "";
-        return true;
-      }
-
-      _cleanForm() {
-        this.$.nombre.value = null;
-        this.$.apellidos.value = null;
-        this.$.edad.value = null;
-      }
-
       _addUser(evt) {
-        if (!this._validateInputs()) return;
-
         this.push('users', {
           id: this.contador++,
-          nombre: this.$.nombre.value,
-          apellidos: this.$.apellidos.value,
-          edad: +this.$.edad.value
+          ...evt.detail
         });
-
-        this._cleanForm();
       }
 
       _removeUser(evt) {

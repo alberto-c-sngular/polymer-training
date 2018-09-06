@@ -23,6 +23,7 @@
       suite('user-list', () => {
         let element,
             elementShadowRoot,
+            form,
             addButton,
             inputName,
             inputLastName,
@@ -32,48 +33,59 @@
           nombre: 'Demo',
           apellidos: 'User',
           edad: 20
-        }
+        };
+
         const userList = [
           { id: 0, nombre: 'User1', apellidos: 'LastName1', edad: 20 },
           { id: 1, nombre: 'User2', apellidos: 'LastName2', edad: 50 },
           { id: 2, nombre: 'User3', apellidos: 'LastName3', edad: 40 },
           { id: 3, nombre: 'User4', apellidos: 'LastName4', edad: 30 },
           { id: 4, nombre: 'User5', apellidos: 'LastName5', edad: 90 },
-        ]
+        ];
+
         setup(function() {
           element = fixture('BasicTestFixture');
           elementShadowRoot = element.shadowRoot;
-          addButton = elementShadowRoot.querySelector('paper-button');
-          inputName = elementShadowRoot.querySelector('#nombre');
-          inputLastName = elementShadowRoot.querySelector('#apellidos');
-          inputAge = elementShadowRoot.querySelector('#edad');
+          flush( () => {
+            form = elementShadowRoot.querySelector('new-user-form');
+            addButton = form.shadowRoot.querySelector('paper-button');
+            inputName = form.shadowRoot.querySelector('#nombre');
+            inputLastName = form.shadowRoot.querySelector('#apellidos');
+            inputAge = form.shadowRoot.querySelector('#edad');
+          })
         });
 
-        test('add user without name shouldn\'t be posible', () => {
-          inputName.value = "";
-          inputLastName.value = demoUser.apellidos;
-          inputAge.value = demoUser.edad;
-          addButton.click();
-          expect(element.users).to.have.length(0);
-          expect(element.errorMessage).to.be.equal("El nombre es necesario");
+        test('add user without name shouldn\'t be posible', done => {
+          flush( () => {
+            inputName.value = "";
+            inputLastName.value = demoUser.apellidos;
+            inputAge.value = demoUser.edad;
+            addButton.click();
+            expect(element.users).to.have.length(0);
+            done();
+          })
         });
 
-        test('add user without lastname shouldn\'t be posible', () => {
-          inputName.value = demoUser.nombre;
-          inputLastName.value = "";
-          inputAge.value = demoUser.edad;
-          addButton.click();
-          expect(element.users).to.have.length(0);
-          expect(element.errorMessage).to.be.equal("El apellido es necesario");
+        test('add user without lastname shouldn\'t be posible', done => {
+          flush( () => {
+            inputName.value = demoUser.nombre;
+            inputLastName.value = "";
+            inputAge.value = demoUser.edad;
+            addButton.click();
+            expect(element.users).to.have.length(0);
+            done();
+          });
         });
 
-        test('add user without age shouldn\'t be posible', () => {
-          inputName.value = demoUser.nombre;
-          inputLastName.value = demoUser.apellidos;
-          inputAge.value = "";
-          addButton.click();
-          expect(element.users).to.have.length(0);
-          expect(element.errorMessage).to.be.equal("La edad es necesaria");
+        test('add user without age shouldn\'t be posible', done => {
+          flush( () => {
+            inputName.value = demoUser.nombre;
+            inputLastName.value = demoUser.apellidos;
+            inputAge.value = "";
+            addButton.click();
+            expect(element.users).to.have.length(0);
+            done();
+          });
         });
 
         test('average should be correct', () => {
@@ -81,25 +93,31 @@
           expect(element.mediaEdad).to.be.equal(46);
         });
 
-        test('when press button if form is valid the user should be added', () => {
-          inputName.value = demoUser.nombre;
-          inputLastName.value = demoUser.apellidos;
-          inputAge.value = demoUser.edad;
-          addButton.click();
-          expect(element.users).to.have.length(1);
-          expect(element.users[0].nombre).to.be.equal('Demo');
-          expect(element.users[0].apellidos).to.be.equal('User');
-          expect(element.users[0].edad).to.be.equal(20);
+        test('when press button if form is valid the user should be added', done => {
+          flush( () => {
+            inputName.value = demoUser.nombre;
+            inputLastName.value = demoUser.apellidos;
+            inputAge.value = demoUser.edad;
+            addButton.click();
+            expect(element.users).to.have.length(1);
+            expect(element.users[0].nombre).to.be.equal('Demo');
+            expect(element.users[0].apellidos).to.be.equal('User');
+            expect(element.users[0].edad).to.be.equal(20);
+            done();
+          });
         });
 
-        test('after add a user the form should be empty', () => {
-          inputName.value = demoUser.nombre;
-          inputLastName.value = demoUser.apellidos;
-          inputAge.value = demoUser.edad;
-          addButton.click();
-          expect(inputName.value).to.be.null;
-          expect(inputLastName.value).to.be.null;
-          expect(inputAge.value).to.be.null;
+        test('after add a user the form should be empty', done => {
+          flush( () => {
+            inputName.value = demoUser.nombre;
+            inputLastName.value = demoUser.apellidos;
+            inputAge.value = demoUser.edad;
+            addButton.click();
+            expect(inputName.value).to.be.undefined;
+            expect(inputLastName.value).to.be.undefined;
+            expect(inputAge.value).to.be.undefined;
+            done();
+          });
         });
 
         test('pressing remove button should remove the user from list', (done) => {

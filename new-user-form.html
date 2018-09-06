@@ -1,0 +1,103 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/iron-form/iron-form.html">
+
+<dom-module id="new-user-form">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+    </style>
+    <iron-form id="form">
+      <form>
+        <paper-input id="nombre" 
+          auto-validate
+          label="Nombre"
+          error-message="El nombre es necesario"
+          value="{{nombre}}"
+          required>
+        </paper-input>
+        <paper-input id="apellidos"
+          auto-validate
+          label="Primer Apellido" 
+          error-message="El apellido es necesario"
+          value="{{apellidos}}"
+          required>
+        </paper-input>
+        <paper-input id="edad"
+          auto-validate
+          type="number" 
+          label="Edad" 
+          error-message="La edad es necesaria"
+          min="0"
+          max="120"
+          value="{{edad}}"
+          required>
+        </paper-input>    
+        
+        <paper-button type="submit" on-click="_addUser" raised>
+          Añadir
+        </paper-button>
+      </form>
+    </iron-form>
+  </template>
+  
+  <script>
+    /**
+     * `new-user-form` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class NewUserForm extends Polymer.Element {
+      static get is() { return 'new-user-form'; }
+      static get properties() {
+        return {
+          nombre: {
+            type: String
+          },
+          apellidos: {
+            type: String
+          },
+          edad: {
+            type: Number
+          }
+        };
+      }
+      
+      _validateInputs() {
+        this.$.form.validate();
+        return !this.$.nombre.invalid &&
+          !this.$.apellidos.invalid &&
+          !this.$.edad.invalid;
+      }
+
+      _cleanForm() {
+        this.$.form.reset();
+      }
+
+      _addUser(evt) {
+        evt.preventDefault();
+        if(this._validateInputs()) {
+          this.dispatchEvent(new CustomEvent(
+            'add-user', { 
+              detail: {
+                nombre: this.nombre,
+                apellidos: this.apellidos,
+                edad: this.edad
+              }
+            })
+          );
+          this._cleanForm();
+        }
+      }
+
+    }
+
+    window.customElements.define(NewUserForm.is, NewUserForm);
+  </script>
+</dom-module>
