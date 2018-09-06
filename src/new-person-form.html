@@ -19,10 +19,28 @@
     <div class="person-wrapper">
       <h1>New person</h1>
       <iron-form id="myform">
-        <form>
-          <paper-input required error-message="This field is required" id="name" label="Name"></paper-input>
-          <paper-input required error-message="This field is required" id="lastname" label="Last name"></paper-input>
-          <paper-input required error-message="This field is required" id="age" label="Age" type="number"></paper-input>
+        <form>          
+          <paper-input 
+            allowed-pattern="[a-zA-Z]"
+            required
+            error-message="This field is required" 
+            id="name"
+            label="Name"></paper-input>
+
+          <paper-input 
+            allowed-pattern="[a-zA-Z]"
+            required
+            error-message="This field is required" 
+            id="lastname"
+            label="Last name"></paper-input>
+
+          <paper-input 
+            allowed-pattern="[0-9]"
+            required
+            error-message="This field is required" 
+            id="age"
+            label="Age" type="text"></paper-input>
+            
           <div class="wrapper-btns">
             <paper-button on-tap="addPerson" class="custom">Add person</paper-button>
           </div>

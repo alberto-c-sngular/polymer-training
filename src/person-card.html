@@ -14,11 +14,12 @@
         background-color: var(--bkg-color);
       }
 
-      h1, p {
+      h3 {
         display: inline-block;
+        margin: 0;
       }
 
-      .person-wrapper > a {
+      .person-wrapper a {
         float: right;
       }
 
@@ -26,12 +27,9 @@
         color: #555;
       }
     </style>
-    <div class="person-wrapper">
-      <a href="javascript:void(0);" on-click="deletePressed"><iron-icon icon="icons:clear"></iron-icon></a>
-      <div class="info-wrapper">
-        <p class="circle">{{person.age}}</p>
-        <h1>{{person.name}} {{person.lastname}}</h1>        
-      </div>
+    <div class="person-wrapper">        
+      <h3>{{person.name}} {{person.lastname}} - {{person.age}}</h3>        
+      <a href="javascript:void(0);" on-click="deletePressed"><iron-icon icon="icons:clear"></iron-icon></a>      
     </div>
   </template>
 
