@@ -42,6 +42,7 @@
           element3 = fixture('backgroundsFixture');
         });
 
+        // Fail test
         test('There is an initial user John Doe.', (done) => { 
           flush(function() {
             const elementShadowRoot = element1.shadowRoot;
@@ -50,9 +51,9 @@
             assert.equal(rows.length, 3);
             done();
           });
-          
         });
 
+        // Success test
         test('Adding a new user increases the users array.', () => {
           const elementShadowRoot = element2.shadowRoot;
           element2.newName = 'Bruce';
@@ -64,7 +65,7 @@
           assert.equal(initialUsers + 1, finalUsers);
         });
 
-
+        // Fail test
         test('Background color depends on age', (done) => {
           // Child
           element3.newName = 'Kid';
@@ -75,7 +76,7 @@
           flush(function() {
             const elementShadowRoot = element3.shadowRoot;
             const rows = elementShadowRoot.querySelectorAll('tr');
-            assert.equal(rows[1].classList.contains('mature'), true);
+            assert.equal(rows[2].classList.contains('child'), true);
             done();
           });
         });
