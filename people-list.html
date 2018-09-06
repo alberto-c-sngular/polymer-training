@@ -9,17 +9,15 @@
         display: block;
       }
     </style>
-    
-    <div id="cards-container">
+  
+    <div class="card">
       <new-person-form></new-person-form>
       <template is="dom-repeat" items="[[people]]" as="person">
         <person-card person="[[person]]"></person-card>
       </template>
-      <div class="card">
-        <p>Age average: [[average]]</p>
-      </div>
+      <br>
+      <p><strong>Age average: [[average]]</strong></p>
     </div>
-
   </template>
 
   <script>
@@ -30,10 +28,12 @@
           people: {
             type: Array,
             value: [{
+              id: 0,
               name: "Adrian",
               lastname: "Moreno",
               age: 28
             }, {
+              id: 1,
               name: "David",
               lastname: "Lorenzo",
               age: 27
@@ -49,18 +49,24 @@
       ready() {
         super.ready();
         Polymer.RenderStatus.afterNextRender(this, function() {
-          this.addEventListener('add-person-btn-pressed', this._addPerson);
+          this.addEventListener('add-person-btn-pressed', this.addPerson);
+          this.addEventListener('delete-person-btn-pressed', this.removePerson)
         });
       }
       
-      _addPerson(e) {
+      addPerson(e) {
         this.push('people', e.detail.person);
       }
 
+      removePerson(e) {        
+        let i = this.people.indexOf(e.detail.person);
+        this.splice('people', i, 1);
+      }
+
       computeAvg() {        
-        return this.people.reduce((acc, curr, i, arr) => 
+        return Math.floor(this.people.reduce((acc, curr, i, arr) => 
           i < arr.length - 1 ? acc + +curr.age : (acc + +curr.age) / arr.length                    
-        , 0);        
+        , 0));
       }
     }
 

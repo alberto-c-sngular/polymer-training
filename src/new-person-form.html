@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
 
 <dom-module id="new-person-form">
   <template>
@@ -15,14 +16,19 @@
       }
     </style>
 
-    <div class="card">
+    <div class="person-wrapper">
       <h1>New person</h1>
-      <paper-input id="name" label="Name"></paper-input>
-      <paper-input id="lastname" label="Last name"></paper-input>
-      <paper-input id="age" label="Age" type="number"></paper-input>
-      <div class="wrapper-btns">
-        <paper-button on-tap="addPerson">Add person</paper-button>
-      </div>
+      <iron-form id="myform">
+        <form>
+          <paper-input required error-message="This field is required" id="name" label="Name"></paper-input>
+          <paper-input required error-message="This field is required" id="lastname" label="Last name"></paper-input>
+          <paper-input required error-message="This field is required" id="age" label="Age" type="number"></paper-input>
+          <div class="wrapper-btns">
+            <paper-button on-tap="addPerson" class="custom">Add person</paper-button>
+          </div>
+        </form>
+      </iron-form>
+      <br><br><hr>
     </div>
 
   </template>
@@ -32,14 +38,18 @@
       static get is() { return 'new-person-form'; }
 
       addPerson(e) {
-        let person = {
-          name: this.$.name.value,
-          lastname: this.$.lastname.value,
-          age: this.$.age.value
-        }
+        let myForm = this.$.myform;
+        if (myForm.validate()) {
+          let person = {
+            name: this.$.name.value,
+            lastname: this.$.lastname.value,
+            age: this.$.age.value
+          }
 
-        let addPersonButtonPressed = new CustomEvent('add-person-btn-pressed', { detail: { person: person }, bubbles: true, composed: true });
-        this.dispatchEvent(addPersonButtonPressed);
+          let addPersonButtonPressed = new CustomEvent('add-person-btn-pressed', { detail: { person: person }, bubbles: true, composed: true });
+          this.dispatchEvent(addPersonButtonPressed);
+          myForm.reset();
+        }
       }
     }
 

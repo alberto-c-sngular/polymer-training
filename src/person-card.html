@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="./shared-styles.html">
 
 <dom-module id="person-card">
@@ -9,19 +10,29 @@
         --bkg-color: #ffffff;
       }
 
-      .card {
+      .person-wrapper {
         background-color: var(--bkg-color);
       }
 
       h1, p {
         display: inline-block;
       }
-    </style>
-    <div class="card">
-      <p class="circle">{{person.age}}</p>
-      <h1>{{person.name}} {{person.lastname}}</h1>      
-    </div>
 
+      .person-wrapper > a {
+        float: right;
+      }
+
+      iron-icon {
+        color: #555;
+      }
+    </style>
+    <div class="person-wrapper">
+      <a href="javascript:void(0);" on-click="deletePressed"><iron-icon icon="icons:clear"></iron-icon></a>
+      <div class="info-wrapper">
+        <p class="circle">{{person.age}}</p>
+        <h1>{{person.name}} {{person.lastname}}</h1>        
+      </div>
+    </div>
   </template>
 
   <script>
@@ -29,6 +40,9 @@
       static get is() { return 'person-card'; }
       static get properties() {
         return {
+          person: {
+            type: Object
+          },
           color: {
             type: String,
             computed: 'computeColor(person)',
@@ -44,6 +58,16 @@
         else if (person.age > 20 && person.age <= 29) return "#eff7f7";
         else if (person.age > 29 && person.age <= 39) return "#88efef";
         else if (person.age > 39) return "#48ff00";
+      }
+
+      deletePressed() {        
+        this.dispatchEvent(new CustomEvent('delete-person-btn-pressed', 
+          { detail: { person: this.person }, 
+          bubbles: true, composed: true }));
+      }
+
+      editPressed() {
+        console.log("edit");
       }
     }
 
