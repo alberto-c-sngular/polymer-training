@@ -9,45 +9,161 @@
     <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../src/people-list-app/people-list-app.html">
+    <link rel="import" href="../src/people-list-app.html">
   </head>
   <body>
 
-    <test-fixture id="BasicTestFixture">
+    <test-fixture id="testFixture">
       <template>
         <people-list-app></people-list-app>
       </template>
     </test-fixture>
 
-    <test-fixture id="ChangedPropertyTestFixture">
-      <template>
-        <people-list-app prop1="new-prop1"></people-list-app>
-      </template>
-    </test-fixture>
-
+    <script src="mocks/mockResponse.js"></script>
     <script>
       suite('people-list-app', function() {
+        let element;
+        let elementShadowRoot;
+        let server;
 
-        test('instantiating the element with default properties works', function() {
-          var element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'people-list-app');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello people-list-app!');
+        function serverRespond (server) {
+          server.respondWith(
+            'GET',
+            /https:\/\/randomuser.me\/api\/\?results=\d+/,
+            [
+              200,
+              { 'Content-Type': 'application/json' },
+              JSON.stringify(mockResponse)
+            ]
+          );
+          server.respond();
+        }
+
+        setup(done => {
+          server = sinon.fakeServer.create();
+          element = fixture('testFixture');
+          elementShadowRoot = element.shadowRoot;
+
+          flush(done)
         });
 
-        test('setting a property on the element works', function() {
-          // Create a test fixture
-          var element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+        teardown(() => {
+          server.restore();
         });
 
+        test('show show a title', () => {
+            const header = elementShadowRoot.querySelector('h1');
+
+            expect(header).not.to.be.a.null;
+            expect(header.textContent).to.be.equal('People list');
+        });
+
+        test('should show 10 people by default', done => {
+          serverRespond(server);
+
+          flush(() => {
+            const peopleListItems = elementShadowRoot.querySelectorAll('ul > li');
+
+            expect(element.people.length).to.be.equal(10);
+            expect(peopleListItems.length).to.be.equal(10);
+            done();
+          });
+        });
+
+        test('should set a different background color for each person depending on age', done => {
+          serverRespond(server);
+
+          function _getExpectedBgColor (age) {
+            /*
+             * Spec:
+             * el color de cada fila estará condicionado por el valor del campo edad:
+             * - si la persona que se agrega es menor de 20 años la fila deberá mostrarse con el color blanco
+             * - si es mayor de 19 en #eff7f7
+             * - si es mayor de 29 en #cbf2f2
+             * - si es mayor de 39 en #88efef
+             */
+            let expectedBgColor;
+
+            if (age > 39) {
+              expectedBgColor = 'rgb(136, 239, 239)'; // #88efef
+            } else if (age > 29) {
+              expectedBgColor = 'rgb(203, 242, 242)'; // #cbf2f2
+            } else if (age > 19) {
+              expectedBgColor = 'rgb(239, 247, 247)'; // #eff7f7
+            } else {
+              expectedBgColor = 'rgb(255, 255, 255)'; // '#ffffff
+            }
+
+            return expectedBgColor;
+          }
+
+          flush(() => {
+            const peopleListItems = elementShadowRoot.querySelectorAll('ul > li');
+
+            [...peopleListItems].map((listItem, index) => {
+              const expectedBgColor = _getExpectedBgColor(element.people[index].age);
+
+              expect(listItem.style.backgroundColor).to.be.equal(expectedBgColor);
+            });
+
+            done();
+          });
+
+        });
+
+        test('should show the people age average', done => {
+          serverRespond(server);
+
+          sinon.spy(element, '_calculateAverage');
+
+          flush(() => {
+            const ageAverage = elementShadowRoot.querySelector('.note strong').textContent;
+
+            expect(element._calculateAverage.calledOnce).to.be.true;
+            expect(ageAverage).not.to.be.NaN;
+
+            element._calculateAverage.restore();
+            done();
+          });
+        });
+
+        test('should show a form to add a new person', () => {
+          const formElement = elementShadowRoot.querySelector('people-list-form');
+
+          expect(formElement).not.to.be.a.null;
+        });
+
+        test('should add a new person when form fires add action event', done => {
+          serverRespond(server);
+
+          sinon.spy(element, '_onAddPerson');
+
+          element.$.form.payload = {
+            firstName: 'Stephen',
+            lastName: 'Strange',
+            age: '41'
+          }
+
+          flush(() => {
+            const previousPeoplePropertyLength = element.people.length;
+            const previousListItemsLength = elementShadowRoot.querySelectorAll('ul > li').length;
+
+            element.$.form.formActionAdd();
+
+            expect(element._onAddPerson.calledOnce).to.be.true;
+            expect(element.people.length).to.be.equal(previousPeoplePropertyLength + 1);
+
+            flush(() => {
+              const listItems = elementShadowRoot.querySelectorAll('ul > li');
+
+              expect(listItems.length).to.be.equal(previousListItemsLength + 1);
+            });
+
+            element._onAddPerson.restore();
+            done();
+          });
+        });
       });
     </script>
-
-
   </body>
 </html>

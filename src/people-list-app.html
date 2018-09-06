@@ -88,7 +88,7 @@
           },
           people: {
             type: Array,
-            observer: '_calculateAverage'
+            observer: '_peopleChanged'
           },
         };
       }
@@ -125,6 +125,10 @@
         let _range = range || 39;
         let color;
 
+        if (_palette.length === 1) {
+          return _palette[0];
+        }
+
         if (age > _range) {
           return  _palette.pop();
         }
@@ -151,7 +155,14 @@
       }
 
       _onAddPerson () {
-        this.push('people', this.$.form.payload);
+        const newPerson = Object.assign({}, this.$.form.payload);
+
+        newPerson.bgColor = this._getBgColor(newPerson.age);
+        this.push('people', newPerson);
+      }
+
+      _peopleChanged () {
+        this._calculateAverage();
       }
     }
 

@@ -84,7 +84,7 @@
       }
 
       validate () {
-        const fulfilled = this.payload.firstName.length & this.payload.lastName.length && this.payload.age.length;
+        const fulfilled = this.payload.firstName.length > 0 && this.payload.lastName.length > 0 && this.payload.age.length > 0;
         this.error = !fulfilled;
 
         return fulfilled;
