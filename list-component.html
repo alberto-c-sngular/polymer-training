@@ -19,6 +19,9 @@
       .senior {
         background-color: #88EFEF;
       }
+      #add-user {
+        cursor: pointer;
+      }
     </style>
     
     <!-- list-component DOM -->
@@ -40,7 +43,14 @@
       <tr>
         <td><input type="text" name="name" id="input-name" value="{{newName::change}}"></td>
         <td><input type="text" name="surname" id="input-surname" value="{{newSurname::change}}"></td>
-        <td><input type="number" name="age" id="input-age" value="{{newAge::change}}"></td>
+        <td>
+          <input 
+            type="number" 
+            name="age" 
+            id="input-age" 
+            value="{{newAge::change}}"
+            min="0">
+        </td>
         <td><button id="add-user" on-click="addUser">Add User</button></td>
       </tr>
     </table>
@@ -136,7 +146,7 @@
        * Add users from inputs
        */
       addUser() {
-        if(this.newName && this.newSurname && parseInt(this.newAge)) {
+        if(this.newName && this.newSurname && (parseInt(this.newAge) >= 0)) {
           this.push('users', {
             name: this.newName,
             surname: this.newSurname,
