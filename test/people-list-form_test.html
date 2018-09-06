@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>people-list-app test</title>
+
+    <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../src/people-list-form.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <people-list-form></people-list-form>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('people-list-form', () => {
+        let element = fixture('BasicTestFixture');
+        let elementShadowRoot = element.shadowRoot;
+
+        test('should show fields for entering First Name, Last Name and Age', () => {
+          const elementFields = elementShadowRoot.querySelectorAll('paper-input');
+
+          expect(elementFields[0]).not.to.be.null;
+          expect(elementFields[0].label).to.be.equal('First Name');
+          expect(elementFields[1]).not.to.be.null;
+          expect(elementFields[1].label).to.be.equal('Last Name');
+          expect(elementFields[2]).not.to.be.null;
+          expect(elementFields[2].label).to.be.equal('Age');
+        });
+
+        test('should show a `Add` button to perform add action', () => {
+          button = elementShadowRoot.querySelector('paper-button');
+          const buttonLabel = button.textContent.trim() || null;
+
+          expect(button).not.to.be.null;
+          expect(buttonLabel).to.be.equal('Add');
+        });
+
+        suite('when user clicks on `Add` button', () => {
+          setup(() => {
+            sinon.spy(element, 'validate');
+            sinon.spy(element, 'dispatchEvent');
+          });
+
+          teardown(() => {
+            element.validate.restore();
+            element.dispatchEvent.restore();
+          });
+
+          test('should feed back an error if form is not valid', done => {
+            const button = elementShadowRoot.querySelector('paper-button');
+
+            function _invalidExpect () {
+              expect(element.error).to.be.true;
+              expect(element.validate.calledOnce).to.be.true;
+              expect(element.dispatchEvent.called).not.to.be.true;
+              flush(() => {
+                const errorMessageContainer = elementShadowRoot.querySelector('.error');
+                expect(errorMessageContainer).not.to.be.a.null;
+                done();
+              });
+            }
+
+            button.addEventListener('click', _invalidExpect);
+            button.click();
+
+            button.removeEventListener('click', _invalidExpect);
+          });
+
+          test('should fire an event if form is valid', () => {
+
+            element.set('payload.firstName', 'Peter');
+            element.set('payload.lastName', 'Parker');
+            element.set('payload.age', '26');
+
+            function _validExpect () {
+              const dispatchEventArg = new CustomEvent('form-action-add', { bubbles: true, composed: true });
+              expect(element.error).to.be.false;
+              expect(element.validate.calledOnce).to.be.true;
+              expect(element.dispatchEvent.withArgs(dispatchEventArg).called);
+            }
+
+            button.addEventListener('click', _validExpect);
+            button.click();
+
+            button.removeEventListener('click', _validExpect);
+          });
+        });
+      });
+    </script>
+
+  </body>
+</html>

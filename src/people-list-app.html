@@ -96,7 +96,7 @@
       ready () {
         super.ready();
         this._getData();
-        this.$.form.addEventListener('add-person', () => {
+        this.$.form.addEventListener('form-action-add', () => {
           this._onAddPerson();
         });
       }

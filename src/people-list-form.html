@@ -92,7 +92,7 @@
 
       formActionAdd () {
         if (this.validate()) {
-          this.dispatchEvent(new CustomEvent('add-person', { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent('form-action-add', { bubbles: true, composed: true }));
         }
       }
     }
