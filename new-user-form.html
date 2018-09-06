@@ -37,7 +37,7 @@
           required>
         </paper-input>    
         
-        <paper-button type="submit" on-click="_addUser" raised>
+        <paper-button type="submit" on-click="_submit" raised>
           Añadir
         </paper-button>
       </form>
@@ -68,21 +68,10 @@
           }
         };
       }
-      
-      _validateInputs() {
-        this.$.form.validate();
-        return !this.$.nombre.invalid &&
-          !this.$.apellidos.invalid &&
-          !this.$.edad.invalid;
-      }
 
-      _cleanForm() {
-        this.$.form.reset();
-      }
-
-      _addUser(evt) {
+      _submit(evt) {
         evt.preventDefault();
-        if(this._validateInputs()) {
+        if(this.$.form.validate()) {
           this.dispatchEvent(new CustomEvent(
             'add-user', { 
               detail: {
@@ -92,7 +81,7 @@
               }
             })
           );
-          this._cleanForm();
+          this.$.form.reset();
         }
       }
 

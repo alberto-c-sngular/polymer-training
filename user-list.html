@@ -49,7 +49,7 @@
       }
 
       _mediaEdad() {
-        return this.users
+        return ~~this.users
           .reduce( (total, actual) => total + actual.edad, 0) / this.users.length || 0;
       }
 
