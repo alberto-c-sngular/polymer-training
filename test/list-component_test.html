@@ -9,73 +9,56 @@
     <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
+    <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+    <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
     <link rel="import" href="../list-component.html">
   </head>
   <body>
 
-    <test-fixture id="initialUserFixture">
+    <test-fixture id="list-component-fixture">
       <template>
         <list-component></list-component>
       </template>
     </test-fixture>
-
-    <test-fixture id="newUserFixture">
-      <template>
-        <list-component></list-component>
-      </template>
-    </test-fixture>
-
-    <test-fixture id="backgroundsFixture">
-        <template>
-          <list-component></list-component>
-        </template>
-      </test-fixture>
 
     <script>
 
       suite('list-component', () => {
-        let element1, element2, element3;
+        let element, shadowRoot;
         
         setup(function() {
-          element1 = fixture('initialUserFixture');
-          element2 = fixture('newUserFixture');
-          element3 = fixture('backgroundsFixture');
+          element = fixture('list-component-fixture');
+          shadowRoot = element.shadowRoot;
         });
 
-        // Fail test
         test('There is an initial user John Doe.', (done) => { 
           flush(function() {
-            const elementShadowRoot = element1.shadowRoot;
-            const rows = elementShadowRoot.querySelectorAll('tr');
+            const rows = shadowRoot.querySelectorAll('tr');
             // Header + John Doe + new user row (input)
             assert.equal(rows.length, 3);
             done();
           });
         });
 
-        // Success test
         test('Adding a new user increases the users array.', () => {
-          const elementShadowRoot = element2.shadowRoot;
-          element2.newName = 'Bruce';
-          element2.newSurname = 'Wayne';
-          element2.newAge = '45';
-          const initialUsers = element2.users.length;
-          element2.addUser();
-          const finalUsers = element2.users.length;
+          element.newName = 'Bruce';
+          element.newSurname = 'Wayne';
+          element.newAge = '45';
+          const initialUsers = element.users.length;
+          element.addUser();
+          const finalUsers = element.users.length;
           assert.equal(initialUsers + 1, finalUsers);
         });
 
-        // Fail test
         test('Background color depends on age', (done) => {
           // Child
-          element3.newName = 'Kid';
-          element3.newSurname = 'Flash';
-          element3.newAge = '15';
-          element3.addUser();
+          element.newName = 'Kid';
+          element.newSurname = 'Flash';
+          element.newAge = '15';
+          element.addUser();
 
           flush(function() {
-            const elementShadowRoot = element3.shadowRoot;
-            const rows = elementShadowRoot.querySelectorAll('tr');
+            const rows = shadowRoot.querySelectorAll('tr');
             assert.equal(rows[2].classList.contains('child'), true);
             done();
           });
