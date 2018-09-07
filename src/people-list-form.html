@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -22,41 +23,40 @@
 
     <h2>Add a new person</h2>
 
-    <template is="dom-if" if="[[error]]">
-      <p class="error">All fields are required!</p>
-    </template>
+    <iron-form id="ironForm">
+      <form>
+        <paper-input
+          required
+          always-float-label
+          label="First Name"
+          error-message="This field is required"
+          value="{{payload.firstName}}">
+        </paper-input>
 
-    <paper-input
-      required
-      auto-validate
-      always-float-label
-      label="First Name"
-      error-message="This field is required"
-      value="{{payload.firstName}}">
-    </paper-input>
+        <paper-input
+          required
+          always-float-label
+          label="Last Name"
+          error-message="This field is required"
+          value="{{payload.lastName}}">
+        </paper-input>
 
-    <paper-input
-      required
-      auto-validate
-      always-float-label
-      label="Last Name"
-      error-message="This field is required"
-      value="{{payload.lastName}}">
-    </paper-input>
+        <paper-input
+          required
+          always-float-label
+          label="Age"
+          type="number"
+          allowed-pattern="[0-9]"
+          maxlength="3"
+          error-message="This field is required"
+          value="{{payload.age}}">
+        </paper-input>
 
-    <paper-input
-      required
-      auto-validate
-      always-float-label
-      pattern="[0-9]{1-3}"
-      type="number"
-      label="Age"
-      value="{{payload.age}}">
-    </paper-input>
-
-    <paper-button on-tap="formActionAdd">
-      <iron-icon icon="icons:add-box"></iron-icon> Add
-    </paper-button>
+        <paper-button on-tap="_add">
+          <iron-icon icon="icons:add-box"></iron-icon> Add
+        </paper-button>
+      </form>
+    </iron-form>
   </template>
 
   <script>
@@ -78,21 +78,29 @@
           },
           error: {
             type: Boolean,
-            value: false
+            value: false,
+            observer: '_onError'
           }
         };
       }
 
-      validate () {
-        const fulfilled = this.payload.firstName.length > 0 && this.payload.lastName.length > 0 && this.payload.age.length > 0;
-        this.error = !fulfilled;
+      _add () {
+        if (this._validate()) {
+          this.dispatchEvent(new CustomEvent('people-list-add', { bubbles: true, composed: true }));
+          this.$.ironForm.reset();
+        }
+      }
+      
+      _validate () {
+        const isValid = this.$.ironForm.validate();
 
-        return fulfilled;
+        this.error = !isValid;
+        return isValid;
       }
 
-      formActionAdd () {
-        if (this.validate()) {
-          this.dispatchEvent(new CustomEvent('form-action-add', { bubbles: true, composed: true }));
+      _onError (error) {
+        if (error) {
+          this.dispatchEvent(new CustomEvent('people-list-error', { bubbles: true, composed: true }));
         }
       }
     }

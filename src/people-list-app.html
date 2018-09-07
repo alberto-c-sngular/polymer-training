@@ -40,6 +40,22 @@
         padding-left: 1rem;
       }
 
+      .gt-39 {
+        background-color: #88efef;
+      }
+
+      .gt-29 {
+        background-color: #cbf2f2;
+      }
+
+      .gt-19 {
+        background-color: #eff7f7;
+      }
+
+      .lte-19 {
+        background-color: #fff;
+      }
+
       .note {
         color: #666;
         font-size: .9rem;
@@ -61,15 +77,15 @@
 
     <ul>
       <template is="dom-repeat" items="{{people}}">
-        <li style="background-color: [[item.bgColor]]">
+        <li class$="[[item.className]]">
           [[item.firstName]] [[item.lastName]] ([[item.age]])
         </li>
       </template>
     </ul>
 
-    <p class="note">People average age: <strong>[[ageAverage]]</strong></p>
+    <p class="note">People average age: <strong>{{ageAverage}}</strong></p>
 
-    <people-list-form id="form"></people-list-form>
+    <people-list-form id="form" on-people-list-add="_add"></people-list-form>
 
   </template>
 
@@ -80,63 +96,68 @@
       static get properties () {
         return {
           ageAverage: {
-            type: Number
+            type: Number,
+            computed: '_peopleChanged(people.splices)'
           },
           loading: {
             type: Boolean,
             value: true
           },
           people: {
-            type: Array,
-            observer: '_peopleChanged'
-          },
+            type: Array
+          }
         };
       }
 
       ready () {
         super.ready();
         this._getData();
-        this.$.form.addEventListener('form-action-add', () => {
-          this._onAddPerson();
-        });
+      }
+
+      _add () {
+        const newPerson = Object.assign({}, this.$.form.payload);
+
+        newPerson.bgColor = this._getClassName(newPerson.age);
+        this.push('people', newPerson);
       }
 
       _calculateAverage () {
         const accumulate = this.people.reduce((acc, person) => acc + parseInt(person.age, 10), 0);
+        const formattedValue = (accumulate / this.people.length).toFixed(1);
 
-        this.ageAverage = (accumulate / this.people.length).toFixed(1)
+        return formattedValue;
       }
 
       _fillInitialList (data) {
         this.people = data.map(item => {
-          const bgColor = this._getBgColor(item.dob.age);
+          const className = this._getClassName(item.dob.age);
 
           return {
             firstName: item.name.first,
             lastName: item.name.last,
             age: item.dob.age,
-            bgColor: bgColor
+            className: className
           }
         });
       }
 
-      _getBgColor (age, range, palette) {
-        const _palette = palette || ['#ffffff', '#eff7f7', '#cbf2f2', '#88efef'];
+      _getClassName (age, range, classNames) {
+        const _classNames = classNames || ['lte-19', 'gt-19', 'gt-29', 'gt-39'];
         let _range = range || 39;
         let color;
 
-        if (_palette.length === 1) {
-          return _palette[0];
+        if (_classNames.length === 1) {
+          return _classNames[0];
         }
 
         if (age > _range) {
-          return  _palette.pop();
+          return  _classNames.pop();
         }
 
-        _palette.length = _palette.length - 1;
+        _classNames.length = _classNames.length - 1;
         _range = _range - 10;
 
-        return this._getBgColor(age, _range, _palette);
+        return this._getClassName(age, _range, _classNames);
       }
 
       _getData () {
@@ -154,15 +175,8 @@
         );
       }
 
-      _onAddPerson () {
-        const newPerson = Object.assign({}, this.$.form.payload);
-
-        newPerson.bgColor = this._getBgColor(newPerson.age);
-        this.push('people', newPerson);
-      }
-
       _peopleChanged () {
-        this._calculateAverage();
+        return this._calculateAverage();
       }
     }
 

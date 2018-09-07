@@ -45,27 +45,20 @@
 
         suite('when user clicks on `Add` button', () => {
           setup(() => {
-            sinon.spy(element, 'validate');
             sinon.spy(element, 'dispatchEvent');
           });
 
           teardown(() => {
-            element.validate.restore();
             element.dispatchEvent.restore();
           });
 
-          test('should feed back an error if form is not valid', done => {
+          test('should fire an error event if form is not valid', () => {
             const button = elementShadowRoot.querySelector('paper-button');
 
             function _invalidExpect () {
+              const dispatchEventArg = new CustomEvent('people-list-error', { bubbles: true, composed: true });
               expect(element.error).to.be.true;
-              expect(element.validate.calledOnce).to.be.true;
-              expect(element.dispatchEvent.called).not.to.be.true;
-              flush(() => {
-                const errorMessageContainer = elementShadowRoot.querySelector('.error');
-                expect(errorMessageContainer).not.to.be.a.null;
-                done();
-              });
+              expect(element.dispatchEvent.withArgs(dispatchEventArg).called);
             }
 
             button.addEventListener('click', _invalidExpect);
@@ -81,9 +74,8 @@
             element.set('payload.age', '26');
 
             function _validExpect () {
-              const dispatchEventArg = new CustomEvent('form-action-add', { bubbles: true, composed: true });
+              const dispatchEventArg = new CustomEvent('people-list-add', { bubbles: true, composed: true });
               expect(element.error).to.be.false;
-              expect(element.validate.calledOnce).to.be.true;
               expect(element.dispatchEvent.withArgs(dispatchEventArg).called);
             }
 

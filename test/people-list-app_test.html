@@ -73,7 +73,7 @@
         test('should set a different background color for each person depending on age', done => {
           serverRespond(server);
 
-          function _getExpectedBgColor (age) {
+          function _getExpectedClassName (age) {
             /*
              * Spec:
              * el color de cada fila estará condicionado por el valor del campo edad:
@@ -82,28 +82,29 @@
              * - si es mayor de 29 en #cbf2f2
              * - si es mayor de 39 en #88efef
              */
-            let expectedBgColor;
+            let expectedClassName;
 
             if (age > 39) {
-              expectedBgColor = 'rgb(136, 239, 239)'; // #88efef
+              expectedClassName = 'gt-39'; // background-color: #88efef
             } else if (age > 29) {
-              expectedBgColor = 'rgb(203, 242, 242)'; // #cbf2f2
+              expectedClassName = 'gt-29'; // background-color: #cbf2f2
             } else if (age > 19) {
-              expectedBgColor = 'rgb(239, 247, 247)'; // #eff7f7
+              expectedClassName = 'gt-19'; // background-color: #eff7f7
             } else {
-              expectedBgColor = 'rgb(255, 255, 255)'; // '#ffffff
+              expectedClassName = 'lte-19'; // background-color: #ffffff
             }
 
-            return expectedBgColor;
+            return expectedClassName;
           }
 
           flush(() => {
             const peopleListItems = elementShadowRoot.querySelectorAll('ul > li');
 
             [...peopleListItems].map((listItem, index) => {
-              const expectedBgColor = _getExpectedBgColor(element.people[index].age);
+              const expectedClassName = _getExpectedClassName(element.people[index].age);
+              const containsClassName = listItem.classList.contains(expectedClassName);
 
-              expect(listItem.style.backgroundColor).to.be.equal(expectedBgColor);
+              expect(containsClassName).to.be.true;
             });
 
             done();
@@ -136,21 +137,21 @@
         test('should add a new person when form fires add action event', done => {
           serverRespond(server);
 
-          sinon.spy(element, '_onAddPerson');
+          sinon.spy(element, '_add');
 
           element.$.form.payload = {
             firstName: 'Stephen',
             lastName: 'Strange',
             age: '41'
-          }
+          };
 
           flush(() => {
             const previousPeoplePropertyLength = element.people.length;
             const previousListItemsLength = elementShadowRoot.querySelectorAll('ul > li').length;
 
-            element.$.form.formActionAdd();
+            element.$.form._add();
 
-            expect(element._onAddPerson.calledOnce).to.be.true;
+            expect(element._add.calledOnce).to.be.true;
             expect(element.people.length).to.be.equal(previousPeoplePropertyLength + 1);
 
             flush(() => {
@@ -159,7 +160,29 @@
               expect(listItems.length).to.be.equal(previousListItemsLength + 1);
             });
 
-            element._onAddPerson.restore();
+            element._add.restore();
+            done();
+          });
+        });
+
+        test('should recalculate age average when a new person is added', done => {
+          serverRespond(server);
+
+          sinon.spy(element, '_calculateAverage');
+
+          element.$.form.payload = {
+            firstName: 'Scarlet',
+            lastName: 'Witch',
+            age: '99'
+          };
+
+          flush(() => {
+            element.$.form._add();
+
+            // called for first time on element initialization, it should be called again after adding
+            expect(element._calculateAverage.calledTwice).to.be.true;
+
+            element._calculateAverage.restore();
             done();
           });
         });

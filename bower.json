@@ -8,7 +8,8 @@
     "paper-button": "^2.1.3",
     "paper-input": "^2.2.3",
     "paper-spinner": "^2.1.0",
-    "iron-icons": "^2.1.1"
+    "iron-icons": "^2.1.1",
+    "iron-form": "^2.4.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
