@@ -2,46 +2,61 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/iron-form/iron-form.html">
+<link rel="import" href="bower_components/paper-card/paper-card.html">
 
 <dom-module id="new-user-form">
   <template>
     <style>
       :host {
-        display: block
+        display:  block;
+      }
+      paper-card {
+        width: 100%;
+      }
+      paper-button {
+        color: var(--dark-primary-color);
       }
     </style>
+    
     <iron-form id="form">
       <form>
-        <paper-input id="nombre" 
-          auto-validate
-          label="Nombre"
-          error-message="El nombre es necesario"
-          value="{{nombre}}"
-          required>
-        </paper-input>
-        <paper-input id="apellidos"
-          auto-validate
-          label="Primer Apellido" 
-          error-message="El apellido es necesario"
-          value="{{apellidos}}"
-          required>
-        </paper-input>
-        <paper-input id="edad"
-          auto-validate
-          type="number" 
-          label="Edad" 
-          error-message="La edad es necesaria"
-          min="0"
-          max="120"
-          value="{{edad}}"
-          required>
-        </paper-input>    
-        
-        <paper-button type="submit" on-click="_submit" raised>
-          Añadir
-        </paper-button>
+        <paper-card heading="Añadir usuario" elevation="0" animated-shadow="false">
+          <div class="card-content">
+            <paper-input id="nombre" 
+              auto-validate
+              label="Nombre"
+              error-message="El nombre es necesario"
+              value="{{nombre}}"
+              required>
+            </paper-input>
+            <paper-input id="apellidos"
+              auto-validate
+              label="Primer Apellido" 
+              error-message="El apellido es necesario"
+              value="{{apellidos}}"
+              required>
+            </paper-input>
+            <paper-input id="edad"
+              auto-validate
+              type="number" 
+              label="Edad" 
+              error-message="La edad es necesaria"
+              min="0"
+              max="120"
+              value="{{edad}}"
+              required>
+            </paper-input>
+          </div>
+          <div class="card-actions">
+            <paper-button type="submit" on-click="_submit">
+              Añadir
+            </paper-button>
+          </div>
+        </paper-card>
       </form>
     </iron-form>
+    
+    
   </template>
   
   <script>
@@ -69,6 +84,11 @@
         };
       }
 
+      ready() {
+        super.ready();
+        this.$.nombre.focus();
+      }
+
       _submit(evt) {
         evt.preventDefault();
         if(this.$.form.validate()) {
@@ -81,6 +101,7 @@
               }
             })
           );
+          this.$.nombre.focus();
           this.$.form.reset();
         }
       }

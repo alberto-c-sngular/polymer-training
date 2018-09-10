@@ -4,24 +4,88 @@
   <template>
     <style>
       :host {
-        --background-user: white;
         display: block;
         border: 1px solid #AAA;
-        padding: 1em;
         border-radius: 5px;
         margin-bottom: .5em;
-        background-color: var(--background-user);
+        animation-name: addUser;
+        animation-duration: 500ms;
+        animation-timing-function: ease-in-out;
       }
+
+      h2 {
+        margin-top: 0;
+        color: var(--primary-text-color);
+      }
+      
+      @keyframes removeUser {
+        from { 
+          height: auto;
+          padding: auto;
+          margin: auto;
+          opacity: 1;
+        };
+        to { 
+          height: 0;
+          padding: 0;
+          margin: 0;
+          opacity: 0;
+        };
+      }      
+
+      @keyframes addUser {
+        from { 
+          height: 0;
+          padding: 0;
+          margin: 0;
+          opacity: 0;
+        };
+        to { 
+          height: auto;
+          padding: auto;
+          margin: auto;
+          opacity: 1;
+        };
+      }
+
+      .container {
+        --background_user: white;
+        padding: 1em;
+        display: block;
+        background-color: var(--background_user);
+      }
+      .container.hidden {
+        animation-name: removeUser;
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+      }
+      .container.user_gt_19 {
+        --background_user: #eff7f7;
+      }
+      .container.user_gt_29 {
+        --background_user: #cbf2f2;
+      }
+      .container.user_gt_39 {
+        --background_user: #88efef;
+      }
+      
       .close {
-        float: right;
+        position: absolute;
+        right: 1em;
         text-decoration: none;
         font-weight: bold;
-        color: black;
+        color: var(--secondary-text-color);
+      }
+      .close:hover {
+        font-weight: bolder;
+        color: var(--primary-text-color);
       }
     </style>
-    <a class="close" href on-click="_remove">✕</a>
-    <h2>[[user.apellidos]], [[user.nombre]]</h2>
-    <small>[[user.edad]] años</small>
+    <div id="container" class$="container [[classColor]]">
+      <a class="close" href on-click="_remove">✕</a>
+      <h2>[[user.apellidos]], [[user.nombre]]</h2>
+      <small>[[user.edad]] años</small>
+    </div>
   </template>
 
   <script>
@@ -38,40 +102,38 @@
       static get properties() {
         return {
           user: {
-            type: Object          }
+            type: Object
+          },
+          classColor: {
+            type: String,
+            computed: '_classColor(user.*)'
+          },
         };
       }
 
-      ready() {
-        super.ready();
-        this._changeBackgroundColor();
-      }
-
-      _changeBackgroundColor() {
+      _classColor() {
         if (this.user.edad) {
           if (+this.user.edad > 39) {
-            this.updateStyles({
-              '--background-user': '#88efef',
-            });
+            return 'user_gt_39';
           } else if(+this.user.edad > 29) {
-            this.updateStyles({
-              '--background-user': '#cbf2f2',
-            });
+            return 'user_gt_29';
           } else if(+this.user.edad > 19) {
-            this.updateStyles({
-              '--background-user': '#eff7f7',
-            });
+            return 'user_gt_19';
           }
         }
+        return '';
       }
 
       _remove(evt) {
         evt.preventDefault();
-        this.dispatchEvent(new CustomEvent(
-          'remove-user', { 
-            detail: this.user
-          })
-        );
+        this.$.container.classList.add('hidden');
+        setTimeout( () => {
+          this.dispatchEvent(new CustomEvent(
+            'remove-user', { 
+              detail: this.user
+            })
+          );
+        }, 1000);
       }
 
     }

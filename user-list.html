@@ -9,15 +9,24 @@
         display: block;
         position: relative;
       }
+      .noUsers {
+        text-align: center;
+        font-style: italic;
+        color: var(--secondary-text-color);
+      }
     </style>
-    <h3>Añadir usuario</h3>
-    <new-user-form on-add-user="_addUser"></new-user-form>
-    <hr>    
+    <new-user-form class="centered" on-add-user="_addUser"></new-user-form>
+    <hr>
+    <template is="dom-if" if="[[noUsers]]">
+      <p class="noUsers">La lista de usuarios está vacía.</p>  
+    </template>   
     <template is="dom-repeat" items="[[users]]" as="user">
       <user-card user="[[user]]" on-remove-user="_removeUser"></user-card>
     </template>
-    <hr>
-    <b>Media edad: </b> [[mediaEdad]]
+    <template is="dom-if" if="[[!noUsers]]">
+      <hr>    
+      <b>Media edad: </b> [[mediaEdad]]
+    </template>
   </template>
 
   <script>
@@ -40,6 +49,10 @@
           mediaEdad: {
             type: Number,
             computed: '_mediaEdad(users.splices)'
+          },
+          noUsers: {
+            type: Boolean,
+            computed: '_haveUsers(users.splices)'
           }
         };
       }
@@ -53,20 +66,17 @@
           .reduce( (total, actual) => total + actual.edad, 0) / this.users.length || 0;
       }
 
+      _haveUsers() {
+        return !this.users.length;
+      }
+
       _addUser(evt) {
-        this.push('users', {
-          id: this.contador++,
-          ...evt.detail
-        });
+        this.push('users', { id: this.contador++, ...evt.detail });
       }
 
       _removeUser(evt) {
         const userToRemove = evt.detail;
-        this.set('users',
-          this.users.filter(
-            user => user.id !== userToRemove.id
-          )
-        );
+        this.splice('users', this.users.indexOf(userToRemove), 1);
       }
     }
 

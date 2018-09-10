@@ -127,8 +127,10 @@
             expect(element.users).to.have.length(5);
             const userElements = elementShadowRoot.querySelector('user-card');
             userElements.shadowRoot.querySelector('.close').click();
-            expect(element.users).to.have.length(4);
-            done();
+            setTimeout( () => {
+              expect(element.users).to.have.length(4);
+              done();
+            }, 1000)
           })
         });
 
