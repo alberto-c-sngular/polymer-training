@@ -1,0 +1,37 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer-redux/polymer-redux.html">
+<script src="../node_modules/redux/dist/redux.js"></script>
+
+<script>
+  const initialState = {
+    users: [
+      { id: 0, nombre: 'Samuel', apellidos: 'Peregrina', edad: 30 },
+      { id: 1, nombre: 'Juan', apellidos: 'Palomo', edad: 10 },
+      { id: 2, nombre: 'Paco', apellidos: 'Pepe', edad: 69 }
+    ],
+    contador: 3
+  };
+
+  const reducer = (state, action) => {
+    if(!state) return initialState;
+
+    const users = state.users.slice(0);
+
+    switch (action.type) {
+      case 'ADD_USER':
+        users.push({
+          id: state.contador++,
+          ...action.user
+        });
+        break;
+
+      case 'REMOVE_USER':
+        users.splice('users', users.indexOf(action.user), 1);
+        break;    
+    }
+    return {...state, users: users};
+  }
+
+  const store = Redux.createStore(reducer);
+  const ReduxMixin = PolymerRedux(store);
+</script>
