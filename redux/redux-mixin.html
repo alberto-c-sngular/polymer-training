@@ -27,6 +27,21 @@
 
       case 'REMOVE_USER':
         users.splice(users.indexOf(action.user), 1);
+        break;
+
+      case 'ADD_USERS':
+        action.users.forEach(user => users.push(user));
+        break;
+
+      case 'SET_USERS':
+        users.splice(0, users.length);
+        state.contador = 0;
+        action.users.forEach(user => users.push(user));
+        break;      
+
+      case 'RESET':
+        users.splice(0, users.length);
+        state.contador = 0;
         break;    
     }
     return {...state, users: users};

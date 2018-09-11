@@ -62,8 +62,14 @@
           remove: user => {
             return { type: 'REMOVE_USER', user: user }
           },
-          add: user => { 
+          addUser: user => { 
             return { type: 'ADD_USER', user: user }
+          },
+          setUsers: users => { 
+            return { type: 'SET_USERS', users: users }
+          },
+          reset: user => { 
+            return { type: 'RESET' }
           },
         }
       }
@@ -79,7 +85,7 @@
 
       _addUser(evt) {
         const userToAdd = evt.detail;
-        this.dispatch('add', userToAdd);
+        this.dispatch('addUser', userToAdd);
       }
 
       _removeUser(evt) {
