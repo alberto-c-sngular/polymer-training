@@ -26,7 +26,7 @@
         break;
 
       case 'REMOVE_USER':
-        users.splice('users', users.indexOf(action.user), 1);
+        users.splice(users.indexOf(action.user), 1);
         break;    
     }
     return {...state, users: users};
